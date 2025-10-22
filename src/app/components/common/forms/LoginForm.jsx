@@ -84,7 +84,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Input
-        label="Email"
+        label="Correo Electrónico"
         type="email"
         name="email"
         placeholder="Login@example.com"
@@ -99,14 +99,14 @@ export default function LoginForm() {
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="block text-sm font-medium text-gray-800">
-            Password
+            Contraseña
           </label>
           <a href="#" className="text-sm text-blue-600 hover:underline">
-            Forgot password?
+            Olvidaste la contraseña?
           </a>
         </div>
         <Input
-          name="password"
+          name="Contraseña"
           placeholder="••••••••••••••"
           value={formData.password}
           onChange={handleChange}
@@ -134,7 +134,7 @@ export default function LoginForm() {
           iconPosition="right"
           className="rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl shadow-md hover:shadow-lg font-bold px-12"
         >
-          LOGIN
+          INICIA SESIÓN
         </Button>
       </div>
     </form>
