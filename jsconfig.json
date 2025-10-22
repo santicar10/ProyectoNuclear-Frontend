@@ -1,7 +1,32 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@app/*": ["./src/app/*"],
+      "@components/*": ["./src/app/components/*"],
+      "@services/*": ["./src/app/services/*"],
+      "@config/*": ["./src/app/config/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@/app/hooks/*": ["./src/app/hooks/*"],
+      "@utils/*": ["./src/app/utils/*"],
+      "@routes/*": ["./src/app/(routes)/*"],
+      "@pages/*": ["./src/app/pages/*"],
+      "@data/*": ["./src/app/data/*"],
+      "@i18n/*": ["./src/app/i18n/*"],
+      "@store/*": ["./src/app/store/*"],
+      "@schemas/*": ["./src/app/schemas/*"],  
+      "@contexts/*": ["./src/app/contexts/*"],
+      "@locales/*": ["./src/app/locales/*"],
     }
-  }
+  },
+   "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx"
+  ],
+  "exclude": ["node_modules"]
 }
