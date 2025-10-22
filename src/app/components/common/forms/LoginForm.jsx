@@ -1,8 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Input from "../ui/Input";
-import Button from "../ui/Button";
+import Input from "@components/common/inputs/Input";
+import Button from "@components/common/Button";
+import { validateLoginForm, hasErrors, validateEmail, validatePassword } from "@lib/validations/loginValidations";
+
+// Icono de flecha
+const ArrowIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+  </svg>
+);
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -10,6 +18,7 @@ export default function LoginForm() {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -18,7 +27,7 @@ export default function LoginForm() {
       ...prev,
       [name]: value
     }));
-    // Limpiar error del campo cuando el usuario escribe
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -27,48 +36,46 @@ export default function LoginForm() {
     }
   };
 
-  const validate = () => {
-    const newErrors = {};
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    let error = null;
 
-    if (!formData.email) {
-      newErrors.email = "El email es requerido";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email inválido";
+    if (name === "email") {
+      error = validateEmail(value);
+    } else if (name === "password") {
+      error = validatePassword(value);
     }
 
-    if (!formData.password) {
-      newErrors.password = "La contraseña es requerida";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "La contraseña debe tener al menos 6 caracteres";
+    if (error) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: error
+      }));
     }
-
-    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const newErrors = validate();
+    const formErrors = validateLoginForm(formData);
     
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (hasErrors(formErrors)) {
+      setErrors(formErrors);
       return;
     }
 
     setIsLoading(true);
+    setErrors({});
     
     try {
-      // Aquí irá tu lógica de autenticación
       console.log("Datos de login:", formData);
-      
-      // Simular llamada API
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Aquí manejarías el login exitoso
       alert("Login exitoso!");
-      
     } catch (error) {
-      setErrors({ submit: "Error al iniciar sesión. Intenta de nuevo." });
+      console.error("Error:", error);
+      setErrors({ 
+        submit: "Error al iniciar sesión. Por favor verifica tus credenciales." 
+      });
     } finally {
       setIsLoading(false);
     }
@@ -77,26 +84,40 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Input
-        label="Correo electrónico"
+        label="Email"
         type="email"
         name="email"
-        placeholder="tu@email.com"
+        placeholder="Login@example.com"
         value={formData.email}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.email}
-        autoComplete="email"
+        labelClassName="text-gray-800"
+        inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
       />
 
-      <Input
-        label="Contraseña"
-        type="password"
-        name="password"
-        placeholder="••••••••"
-        value={formData.password}
-        onChange={handleChange}
-        error={errors.password}
-        autoComplete="current-password"
-      />
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium text-gray-800">
+            Password
+          </label>
+          <a href="#" className="text-sm text-blue-600 hover:underline">
+            Forgot password?
+          </a>
+        </div>
+        <Input
+          name="password"
+          placeholder="••••••••••••••"
+          value={formData.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={errors.password}
+          showPasswordToggle={true}
+          showPassword={showPassword}
+          onTogglePassword={() => setShowPassword(!showPassword)}
+          inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+        />
+      </div>
 
       {errors.submit && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -104,18 +125,17 @@ export default function LoginForm() {
         </div>
       )}
 
-      <Button 
-        type="submit" 
-        fullWidth 
-        isLoading={isLoading}
-      >
-        Iniciar Sesión
-      </Button>
-
-      <div className="text-center">
-        <a href="#" className="text-sm text-blue-600 hover:underline">
-          ¿Olvidaste tu contraseña?
-        </a>
+      <div className="flex justify-center">
+        <Button 
+          type="submit" 
+          isLoading={isLoading}
+          variant="warning"
+          icon={ArrowIcon}
+          iconPosition="right"
+          className="rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl shadow-md hover:shadow-lg font-bold px-12"
+        >
+          LOGIN
+        </Button>
       </div>
     </form>
   );
