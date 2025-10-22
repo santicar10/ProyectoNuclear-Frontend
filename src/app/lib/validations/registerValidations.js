@@ -1,4 +1,25 @@
-/***
+/**
+ * Validación de nombre
+ * @param {string} name - Nombre a validar
+ * @returns {string|null} - Mensaje de error o null si es válido
+ */
+export const validateName = (name) => {
+  if (!name || name.trim() === "") {
+    return "El nombre es requerido";
+  }
+
+  if (name.trim().length < 2) {
+    return "El nombre debe tener al menos 2 caracteres";
+  }
+
+  if (name.trim().length > 50) {
+    return "El nombre no puede tener más de 50 caracteres";
+  }
+
+  return null;
+};
+
+/**
  * Validación de email
  * @param {string} email - Email a validar
  * @returns {string|null} - Mensaje de error o null si es válido
@@ -38,12 +59,17 @@ export const validatePassword = (password) => {
 };
 
 /**
- * Validación completa del formulario de login
- * @param {Object} formData - Datos del formulario {email, password}
- * @returns {Object} - Objeto con errores {email?: string, password?: string}
+ * Validación completa del formulario de registro
+ * @param {Object} formData - Datos del formulario {name, email, password}
+ * @returns {Object} - Objeto con errores {name?: string, email?: string, password?: string}
  */
-export const validateLoginForm = (formData) => {
+export const validateRegisterForm = (formData) => {
   const errors = {};
+
+  const nameError = validateName(formData.name);
+  if (nameError) {
+    errors.name = nameError;
+  }
 
   const emailError = validateEmail(formData.email);
   if (emailError) {

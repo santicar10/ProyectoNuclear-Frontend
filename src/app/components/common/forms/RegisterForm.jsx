@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Input from "@components/common/inputs/Input";
 import Button from "@components/common/Button";
-import { validateLoginForm, hasErrors, validateEmail, validatePassword } from "@/app/lib/validations/loginValidations";
+import { validateRegisterForm, hasErrors, validateName, validateEmail, validatePassword } from "@/app/lib/validations/registerValidations";
 
 // Icono de flecha
 const ArrowIcon = () => (
@@ -12,8 +12,9 @@ const ArrowIcon = () => (
   </svg>
 );
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
   });
@@ -40,7 +41,9 @@ export default function LoginForm() {
     const { name, value } = e.target;
     let error = null;
 
-    if (name === "email") {
+    if (name === "name") {
+      error = validateName(value);
+    } else if (name === "email") {
       error = validateEmail(value);
     } else if (name === "password") {
       error = validatePassword(value);
@@ -57,7 +60,7 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const formErrors = validateLoginForm(formData);
+    const formErrors = validateRegisterForm(formData);
     
     if (hasErrors(formErrors)) {
       setErrors(formErrors);
@@ -68,13 +71,13 @@ export default function LoginForm() {
     setErrors({});
     
     try {
-      console.log("Datos de login:", formData);
+      console.log("Datos de registro:", formData);
       await new Promise(resolve => setTimeout(resolve, 2000));
-      alert("Login exitoso!");
+      alert("Registro exitoso!");
     } catch (error) {
       console.error("Error:", error);
       setErrors({ 
-        submit: "Error al iniciar sesión. Por favor verifica tus credenciales." 
+        submit: "Error al registrarse. Por favor intenta nuevamente." 
       });
     } finally {
       setIsLoading(false);
@@ -84,10 +87,23 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Input
+        label="Nombre"
+        type="text"
+        name="name"
+        placeholder="Juan Pérez"
+        value={formData.name}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={errors.name}
+        labelClassName="text-gray-800"
+        inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+      />
+
+      <Input
         label="Correo Electrónico"
         type="email"
         name="email"
-        placeholder="Login@example.com"
+        placeholder="correo@example.com"
         value={formData.email}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -96,28 +112,20 @@ export default function LoginForm() {
         inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
       />
 
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-800">
-            Contraseña
-          </label>
-          <a href="#" className="text-sm text-blue-600 hover:underline">
-            Olvidaste la contraseña?
-          </a>
-        </div>
-        <Input
-          name="Contraseña"
-          placeholder="••••••••••••••"
-          value={formData.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={errors.password}
-          showPasswordToggle={true}
-          showPassword={showPassword}
-          onTogglePassword={() => setShowPassword(!showPassword)}
-          inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
-        />
-      </div>
+      <Input
+        label="Contraseña"
+        name="password"
+        placeholder="••••••••••••••"
+        value={formData.password}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={errors.password}
+        showPasswordToggle={true}
+        showPassword={showPassword}
+        onTogglePassword={() => setShowPassword(!showPassword)}
+        labelClassName="text-gray-800"
+        inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+      />
 
       {errors.submit && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -134,8 +142,17 @@ export default function LoginForm() {
           iconPosition="right"
           className="rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl shadow-md hover:shadow-lg font-bold px-12"
         >
-          INICIA SESIÓN
+          REGISTRARSE
         </Button>
+      </div>
+
+      <div className="text-center">
+        <p className="text-sm text-gray-600">
+          ¿Ya tienes cuenta?{" "}
+          <a href="/login" className="text-blue-600 hover:underline font-medium">
+            Inicia sesión aquí
+          </a>
+        </p>
       </div>
     </form>
   );
