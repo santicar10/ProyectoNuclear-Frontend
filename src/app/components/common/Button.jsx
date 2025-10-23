@@ -1,3 +1,12 @@
+/**
+ * Componente de botón reutilizable con múltiples variantes y estados
+ * 
+ * @component
+ * @example
+ * <Button variant="primary" onClick={handleClick} isLoading={loading}>
+ *   Guardar
+ * </Button>
+ */
 export default function Button({ 
   children, 
   variant = "primary",

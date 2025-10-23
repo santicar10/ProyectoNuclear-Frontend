@@ -1,7 +1,12 @@
-/***
- * Validación de email
+/**
+ * Valida el formato de un email
+ * 
  * @param {string} email - Email a validar
- * @returns {string|null} - Mensaje de error o null si es válido
+ * @returns {string|null} Mensaje de error o null si es válido
+ * 
+ * @example
+ * validateEmail("user@example.com") // null
+ * validateEmail("invalid") // "Por favor ingresa un email válido"
  */
 export const validateEmail = (email) => {
   if (!email || email.trim() === "") {
@@ -17,9 +22,11 @@ export const validateEmail = (email) => {
 };
 
 /**
- * Validación de password
- * @param {string} password - Password a validar
- * @returns {string|null} - Mensaje de error o null si es válido
+ * Valida una contraseña
+ * Reglas: 6-50 caracteres, no puede estar vacía
+ * 
+ * @param {string} password - Contraseña a validar
+ * @returns {string|null} Mensaje de error o null si es válida
  */
 export const validatePassword = (password) => {
   if (!password || password.trim() === "") {
@@ -38,9 +45,12 @@ export const validatePassword = (password) => {
 };
 
 /**
- * Validación completa del formulario de login
- * @param {Object} formData - Datos del formulario {email, password}
- * @returns {Object} - Objeto con errores {email?: string, password?: string}
+ * Valida todos los campos del formulario de login
+ * 
+ * @param {Object} formData - Datos del formulario
+ * @param {string} formData.email - Email del usuario
+ * @param {string} formData.password - Contraseña del usuario
+ * @returns {Object} Objeto con errores por campo (vacío si no hay errores)
  */
 export const validateLoginForm = (formData) => {
   const errors = {};
@@ -59,9 +69,10 @@ export const validateLoginForm = (formData) => {
 };
 
 /**
- * Verifica si el formulario tiene errores
- * @param {Object} errors - Objeto de errores
- * @returns {boolean} - true si hay errores, false si no
+ * Verifica si hay errores en el objeto de validación
+ * 
+ * @param {Object} errors - Objeto con errores
+ * @returns {boolean} true si hay errores, false si no
  */
 export const hasErrors = (errors) => {
   return Object.keys(errors).length > 0;

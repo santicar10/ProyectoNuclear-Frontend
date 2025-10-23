@@ -1,3 +1,16 @@
+/**
+ * Campo de entrada con soporte para iconos, validación y toggle de contraseña
+ * 
+ * @component
+ * @example
+ * <Input
+ *   label="Email"
+ *   type="email"
+ *   value={email}
+ *   onChange={handleChange}
+ *   error={errors.email}
+ * />
+ */
 export default function Input({ 
   label, 
   type = "text", 
@@ -18,23 +31,27 @@ export default function Input({
           {label}
         </label>
       )}
+      
       <div className="relative">
         {Icon && (
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Icon className="h-5 w-5" />
           </div>
         )}
+        
         <input
           type={showPasswordToggle ? (showPassword ? "text" : "password") : type}
           className={`w-full px-4 py-3 border focus:outline-none focus:ring-2 transition-all ${Icon ? 'pl-10' : ''} ${inputClassName}`}
           {...props}
         />
+        
         {showPasswordToggle && (
           <button
             type="button"
             onClick={onTogglePassword}
             className="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-70 transition-opacity"
             tabIndex={-1}
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
           >
             {showPassword ? (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,8 +66,11 @@ export default function Input({
           </button>
         )}
       </div>
+      
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="mt-1 text-sm text-red-600" role="alert">
+          {error}
+        </p>
       )}
     </div>
   );

@@ -1,3 +1,13 @@
+/**
+ * Contenedor reutilizable con padding y sombra personalizables
+ * 
+ * @component
+ * @example
+ * <Card padding="lg" shadow="xl">
+ *   <h2>Título</h2>
+ *   <p>Contenido de la tarjeta</p>
+ * </Card>
+ */
 export default function Card({ 
   children, 
   className = "",

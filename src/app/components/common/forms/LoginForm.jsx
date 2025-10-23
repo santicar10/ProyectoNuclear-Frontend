@@ -3,15 +3,26 @@
 import { useState } from "react";
 import Input from "@components/common/inputs/Input";
 import Button from "@components/common/Button";
-import { validateLoginForm, hasErrors, validateEmail, validatePassword } from "@/app/lib/validations/loginValidations";
+import { 
+  validateLoginForm, 
+  hasErrors, 
+  validateEmail, 
+  validatePassword 
+} from "@/app/lib/validations/loginValidations";
 
-// Icono de flecha
 const ArrowIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
   </svg>
 );
 
+/**
+ * Formulario de inicio de sesión con validación en tiempo real
+ * 
+ * @component
+ * @example
+ * <LoginForm />
+ */
 export default function LoginForm() {
   const [formData, setFormData] = useState({
     email: "",
@@ -23,16 +34,11 @@ export default function LoginForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
 
+    // Limpia el error del campo al modificarlo
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ""
-      }));
+      setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -47,10 +53,7 @@ export default function LoginForm() {
     }
 
     if (error) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: error
-      }));
+      setErrors(prev => ({ ...prev, [name]: error }));
     }
   };
 
@@ -68,6 +71,7 @@ export default function LoginForm() {
     setErrors({});
     
     try {
+      // TODO: Reemplazar con llamada real a API
       console.log("Datos de login:", formData);
       await new Promise(resolve => setTimeout(resolve, 2000));
       alert("Login exitoso!");
@@ -106,7 +110,7 @@ export default function LoginForm() {
           </a>
         </div>
         <Input
-          name="Contraseña"
+          name="password"
           placeholder="••••••••••••••"
           value={formData.password}
           onChange={handleChange}
@@ -120,7 +124,7 @@ export default function LoginForm() {
       </div>
 
       {errors.submit && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg" role="alert">
           <p className="text-sm text-red-600">{errors.submit}</p>
         </div>
       )}
