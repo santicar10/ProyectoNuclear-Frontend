@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Input from "@components/common/inputs/Input";
 import Button from "@components/common/Button";
+import ForgotPasswordModal from "@components/common/ForgotPasswordModal";
+import authService from "@/app/lib/services/auth.service";
 import { 
   validateLoginForm, 
   hasErrors, 
@@ -24,6 +27,7 @@ const ArrowIcon = () => (
  * <LoginForm />
  */
 export default function LoginForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,6 +35,7 @@ export default function LoginForm() {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,14 +76,29 @@ export default function LoginForm() {
     setErrors({});
     
     try {
-      // TODO: Reemplazar con llamada real a API
-      console.log("Datos de login:", formData);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      alert("Login exitoso!");
+      // Llamada real al backend
+      const result = await authService.login(formData.email, formData.password);
+
+      if (result.success) {
+        // Login exitoso
+        console.log("Login exitoso:", result.data);
+        
+        // Redirigir al dashboard o página principal
+        // Ajusta la ruta según tu aplicación
+        router.push('/dashboard');
+        
+        // O mostrar mensaje de éxito
+        // alert("¡Bienvenido de vuelta!");
+      } else {
+        // Error en el login
+        setErrors({ 
+          submit: result.error || "Error al iniciar sesión. Verifica tus credenciales." 
+        });
+      }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error inesperado:", error);
       setErrors({ 
-        submit: "Error al iniciar sesión. Por favor verifica tus credenciales." 
+        submit: "Error inesperado. Por favor intenta nuevamente." 
       });
     } finally {
       setIsLoading(false);
@@ -86,61 +106,82 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <Input
-        label="Correo Electrónico"
-        type="email"
-        name="email"
-        placeholder="Login@example.com"
-        value={formData.email}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={errors.email}
-        labelClassName="text-gray-800"
-        inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
-      />
-
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-800">
-            Contraseña
-          </label>
-          <a href="#" className="text-sm text-blue-600 hover:underline">
-            Olvidaste la contraseña?
-          </a>
-        </div>
+    <>
+      <form onSubmit={handleSubmit} className="space-y-6">
         <Input
-          name="password"
-          placeholder="••••••••••••••"
-          value={formData.password}
+          label="Correo Electrónico"
+          type="email"
+          name="email"
+          placeholder="Login@example.com"
+          value={formData.email}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={errors.password}
-          showPasswordToggle={true}
-          showPassword={showPassword}
-          onTogglePassword={() => setShowPassword(!showPassword)}
+          error={errors.email}
+          labelClassName="text-gray-800"
           inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
         />
-      </div>
 
-      {errors.submit && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg" role="alert">
-          <p className="text-sm text-red-600">{errors.submit}</p>
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-800">
+              Contraseña
+            </label>
+            <button
+              type="button"
+              onClick={() => setIsForgotPasswordOpen(true)}
+              className="text-sm text-blue-600 hover:underline focus:outline-none"
+            >
+              Olvidaste la contraseña?
+            </button>
+          </div>
+          <Input
+            name="password"
+            placeholder="••••••••••••••"
+            value={formData.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.password}
+            showPasswordToggle={true}
+            showPassword={showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+            inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+          />
         </div>
-      )}
 
-      <div className="flex justify-center">
-        <Button 
-          type="submit" 
-          isLoading={isLoading}
-          variant="warning"
-          icon={ArrowIcon}
-          iconPosition="right"
-          className="rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl shadow-md hover:shadow-lg font-bold px-12"
-        >
-          INICIA SESIÓN
-        </Button>
-      </div>
-    </form>
+        {errors.submit && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg" role="alert">
+            <p className="text-sm text-red-600">{errors.submit}</p>
+          </div>
+        )}
+
+        <div className="flex justify-center">
+          <Button 
+            type="submit" 
+            isLoading={isLoading}
+            variant="warning"
+            icon={ArrowIcon}
+            iconPosition="right"
+            className="rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl shadow-md hover:shadow-lg font-bold px-12"
+          >
+            INICIA SESIÓN
+          </Button>
+        </div>
+
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            ¿No tienes cuenta?{" "}
+            <a href="/registrar" className="text-blue-600 hover:underline font-medium">
+              Regístrate aquí
+            </a>
+          </p>
+        </div>
+      </form>
+
+      {/* Modal de recuperación de contraseña */}
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+      />
+    </>
   );
 }

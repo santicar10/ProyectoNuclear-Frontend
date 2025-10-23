@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Input from "@components/common/inputs/Input";
 import Button from "@components/common/Button";
+import authService from "@/app/lib/services/auth.service";
 import { 
   validateRegisterForm, 
   hasErrors, 
@@ -19,12 +21,14 @@ const ArrowIcon = () => (
 
 /**
  * Formulario de registro con validación en tiempo real
+ * Conectado al backend en http://localhost:8080/api/usuarios/registro
  * 
  * @component
  * @example
  * <RegisterForm />
  */
 export default function RegisterForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -75,14 +79,36 @@ export default function RegisterForm() {
     setErrors({});
     
     try {
-      // TODO: Reemplazar con llamada real a API
-      console.log("Datos de registro:", formData);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      alert("Registro exitoso!");
+      // Llamada real al backend
+      const result = await authService.register(
+        formData.name,
+        formData.email,
+        formData.password
+      );
+
+      if (result.success) {
+        // Registro exitoso
+        console.log("Registro exitoso:", result.data);
+        
+        // Opción 1: Redirigir al login para que inicie sesión
+        alert(result.message || "¡Registro exitoso! Por favor inicia sesión.");
+        router.push('/login');
+        
+        // Opción 2: Auto-login y redirigir al dashboard
+        // const loginResult = await authService.login(formData.email, formData.password);
+        // if (loginResult.success) {
+        //   router.push('/dashboard');
+        // }
+      } else {
+        // Error en el registro
+        setErrors({ 
+          submit: result.error || "Error al registrarse. Por favor intenta nuevamente." 
+        });
+      }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error inesperado:", error);
       setErrors({ 
-        submit: "Error al registrarse. Por favor intenta nuevamente." 
+        submit: "Error inesperado. Por favor intenta nuevamente." 
       });
     } finally {
       setIsLoading(false);
