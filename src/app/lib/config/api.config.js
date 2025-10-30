@@ -16,6 +16,10 @@ export const API_ENDPOINTS = {
   REGISTER: '/api/usuarios/registro',
   PROFILE: '/api/usuarios/perfil',
   RECOVER_PASSWORD: '/api/usuarios/recuperar',
+  CHANGE_PASSWORD: '/api/usuarios/cambiar',
+  VERIFY_CODE: '/api/usuarios/verificar-codigo',
+  RESET_PASSWORD: '/api/usuarios/restablecer-password',
+  RESEND_CODE: '/api/usuarios/reenviar-codigo',
 };
 
 // Configuración de headers por defecto

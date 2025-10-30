@@ -155,6 +155,83 @@ class AuthService {
   }
 
   /**
+   * Verifica el código de recuperación
+   * 
+   * Endpoint: POST /api/usuarios/verificar-codigo
+   * Body: { correo, codigo }
+   */
+  async verifyRecoveryCode(email, code) {
+    try {
+      const response = await httpService.post(API_ENDPOINTS.VERIFY_CODE, {
+        correo: email,
+        codigo: code,
+      });
+
+      return {
+        success: true,
+        data: response,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  /**
+   * Restablece la contraseña usando el endpoint /api/usuarios/cambiar
+   * 
+   * Endpoint: POST /api/usuarios/cambiar
+   * Body: { correo, codigo, nuevaContrasena }
+   */
+  async resetPassword(email, code, newPassword) {
+    try {
+      const response = await httpService.post(API_ENDPOINTS.CHANGE_PASSWORD, {
+        correo: email,
+        codigo: code,
+        nuevaContrasena: newPassword,
+      });
+
+      return {
+        success: true,
+        data: response,
+        message: 'Contraseña actualizada exitosamente',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  /**
+   * Reenvía el código de verificación
+   * 
+   * Endpoint: POST /api/usuarios/reenviar-codigo
+   * Body: { correo }
+   */
+  async resendRecoveryCode(email) {
+    try {
+      const response = await httpService.post(API_ENDPOINTS.RESEND_CODE, {
+        correo: email,
+      });
+
+      return {
+        success: true,
+        data: response,
+        message: 'Código reenviado exitosamente',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  /**
    * Obtiene el perfil del usuario autenticado
    * 
    * Endpoint: GET /api/usuarios/perfil

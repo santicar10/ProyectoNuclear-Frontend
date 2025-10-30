@@ -31,7 +31,7 @@ const CheckCircleIcon = () => (
  * Endpoints usados:
  * - POST /api/usuarios/recuperar (enviar código)
  * - POST /api/usuarios/verificar-codigo (verificar código)
- * - POST /api/usuarios/restablecer-password (nueva contraseña)
+ * - POST /api/usuarios/cambiar (nueva contraseña)
  * - POST /api/usuarios/reenviar-codigo (reenviar código)
  * 
  * @component
