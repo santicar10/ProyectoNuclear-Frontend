@@ -3,13 +3,9 @@
 import { useEffect } from "react";
 
 /**
- * Componente Modal reutilizable con overlay y animaciones
+ * Modal responsive con overlay
  * 
  * @component
- * @example
- * <Modal isOpen={isOpen} onClose={handleClose} title="Mi Modal">
- *   <p>Contenido del modal</p>
- * </Modal>
  */
 export default function Modal({ 
   isOpen, 
@@ -22,13 +18,12 @@ export default function Modal({
   className = ""
 }) {
   const sizes = {
-    sm: "max-w-md",
-    md: "max-w-lg",
-    lg: "max-w-2xl",
-    xl: "max-w-4xl"
+    sm: "max-w-sm",
+    md: "max-w-md lg:max-w-lg",
+    lg: "max-w-lg lg:max-w-2xl",
+    xl: "max-w-2xl lg:max-w-4xl"
   };
 
-  // Bloquear scroll del body cuando el modal está abierto
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -41,7 +36,6 @@ export default function Modal({
     };
   }, [isOpen]);
 
-  // Cerrar con tecla Escape
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape" && isOpen) {
@@ -64,14 +58,14 @@ export default function Modal({
       aria-labelledby="modal-title"
     >
       <div 
-        className={`bg-white rounded-2xl shadow-2xl w-full ${sizes[size]} transform transition-all animate-slideUp ${className}`}
+        className={`bg-white rounded-2xl shadow-2xl w-full ${sizes[size]} max-h-[90vh] overflow-y-auto transform transition-all animate-slideUp ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
             {title && (
-              <h2 id="modal-title" className="text-2xl font-bold text-gray-900">
+              <h2 id="modal-title" className="text-xl sm:text-2xl font-bold text-gray-900">
                 {title}
               </h2>
             )}
@@ -90,19 +84,15 @@ export default function Modal({
         )}
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {children}
         </div>
       </div>
 
       <style jsx>{`
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         @keyframes slideUp {

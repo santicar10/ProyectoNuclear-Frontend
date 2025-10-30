@@ -1,7 +1,6 @@
 /**
  * Configuración de la API
- * 
- * Este archivo centraliza todas las URLs y configuraciones de la API
+ * Sistema basado en SESIONES HTTP (sin tokens JWT)
  */
 
 // URL base del backend
@@ -24,9 +23,5 @@ export const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
 };
 
-// Tiempo de expiración del token (en milisegundos)
-export const TOKEN_EXPIRY_TIME = 24 * 60 * 60 * 1000; // 24 horas
-
-// Clave para almacenar el token en localStorage
-export const TOKEN_STORAGE_KEY = 'auth_token';
+// Clave para almacenar datos del usuario en localStorage
 export const USER_STORAGE_KEY = 'user_data';
