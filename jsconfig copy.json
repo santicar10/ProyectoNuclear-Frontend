@@ -19,7 +19,6 @@
       "@schemas/*": ["./src/app/schemas/*"],  
       "@contexts/*": ["./src/app/contexts/*"],
       "@locales/*": ["./src/app/locales/*"],
-      "@lib/*": ["./src/app/lib/*"]
     }
   },
    "include": [

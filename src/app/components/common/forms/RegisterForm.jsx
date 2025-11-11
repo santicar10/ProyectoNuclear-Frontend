@@ -1,0 +1,190 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Input from "@components/common/inputs/Input";
+import Button from "@components/common/Button";
+import authService from "@/app/lib/services/auth.service";
+import { 
+  validateRegisterForm, 
+  hasErrors, 
+  validateName, 
+  validateEmail, 
+  validatePassword 
+} from "@/app/lib/validations/registerValidations";
+
+const ArrowIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+  </svg>
+);
+
+/**
+ * Formulario de registro con validación en tiempo real
+ * Conectado al backend en http://localhost:8080/api/usuarios/registro
+ * 
+ * @component
+ * @example
+ * <RegisterForm />
+ */
+export default function RegisterForm() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Limpia el error del campo al modificarlo
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    let error = null;
+
+    if (name === "name") {
+      error = validateName(value);
+    } else if (name === "email") {
+      error = validateEmail(value);
+    } else if (name === "password") {
+      error = validatePassword(value);
+    }
+
+    if (error) {
+      setErrors(prev => ({ ...prev, [name]: error }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    const formErrors = validateRegisterForm(formData);
+    
+    if (hasErrors(formErrors)) {
+      setErrors(formErrors);
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+    
+    try {
+      // Llamada real al backend
+      const result = await authService.register(
+        formData.name,
+        formData.email,
+        formData.password
+      );
+
+      if (result.success) {
+        // Registro exitoso
+        console.log("Registro exitoso:", result.data);
+        
+        // Opción 1: Redirigir al login para que inicie sesión
+        alert(result.message || "¡Registro exitoso! Por favor inicia sesión.");
+        router.push('/login');
+        
+        // Opción 2: Auto-login y redirigir al dashboard
+        // const loginResult = await authService.login(formData.email, formData.password);
+        // if (loginResult.success) {
+        //   router.push('/dashboard');
+        // }
+      } else {
+        // Error en el registro
+        setErrors({ 
+          submit: result.error || "Error al registrarse. Por favor intenta nuevamente." 
+        });
+      }
+    } catch (error) {
+      console.error("Error inesperado:", error);
+      setErrors({ 
+        submit: "Error inesperado. Por favor intenta nuevamente." 
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Input
+        label="Nombre"
+        type="text"
+        name="name"
+        placeholder="Juan Pérez"
+        value={formData.name}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={errors.name}
+        labelClassName="text-gray-800"
+        inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+      />
+
+      <Input
+        label="Correo Electrónico"
+        type="email"
+        name="email"
+        placeholder="correo@example.com"
+        value={formData.email}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={errors.email}
+        labelClassName="text-gray-800"
+        inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+      />
+
+      <Input
+        label="Contraseña"
+        name="password"
+        placeholder="••••••••••••••"
+        value={formData.password}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={errors.password}
+        showPasswordToggle={true}
+        showPassword={showPassword}
+        onTogglePassword={() => setShowPassword(!showPassword)}
+        labelClassName="text-gray-800"
+        inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+      />
+
+      {errors.submit && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg" role="alert">
+          <p className="text-sm text-red-600">{errors.submit}</p>
+        </div>
+      )}
+
+      <div className="flex justify-center">
+        <Button 
+          type="submit" 
+          isLoading={isLoading}
+          variant="warning"
+          icon={ArrowIcon}
+          iconPosition="right"
+          className="rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl shadow-md hover:shadow-lg font-bold px-12"
+        >
+          REGISTRARSE
+        </Button>
+      </div>
+
+      <div className="text-center">
+        <p className="text-sm text-gray-600">
+          ¿Ya tienes cuenta?{" "}
+          <a href="/login" className="text-blue-600 hover:underline font-medium">
+            Inicia sesión aquí
+          </a>
+        </p>
+      </div>
+    </form>
+  );
+}
