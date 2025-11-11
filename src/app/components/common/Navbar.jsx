@@ -22,8 +22,8 @@ export default function Navbar() {
 
         {/* Menú (desktop) */}
         <ul className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <li><Link href="#">inicio</Link></li>
-          <li><Link href="#">apadrinamiento</Link></li>
+          <li><Link href="HeroSection.jsx">inicio</Link></li>
+          <li><Link href="./Apadrinamiento.jsx">apadrinamiento</Link></li>
           <li><Link href="#">eventos</Link></li>
           <li><Link href="#">donaciones</Link></li>
           <li><Link href="#">sobre nosotros</Link></li>

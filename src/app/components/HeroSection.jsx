@@ -5,7 +5,6 @@ export default function HeroSection() {
   return (
     <section
       className="relative overflow-hidden min-h-[88vh] flex items-center pt-24" 
-      // pt-24 evita que el Navbar tape el contenido
       style={{
         background: "linear-gradient(90deg, #F1C927 0%, #FA5E60 79%)",
       }}
@@ -62,10 +61,10 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* === Imagen del héroe === */}
+          {/* === Imagen principal === */}
           <div className="mt-10 md:mt-0">
             <Image
-              src="/hero-img.png"  // asegúrate de tener esta imagen en /public/
+              src="/hero-img.png"  
               alt="Niña y niño sonrientes"
               width={420}
               height={520}
