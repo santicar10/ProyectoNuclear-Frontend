@@ -23,11 +23,11 @@ export default function ChildCard({ child, onDelete, showActions = false }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleView = () => {
-    router.push(`/apadrinamiento/${child.id}`);
+    router.push(`/apadrinamiento/${child.id_nino}`);
   };
 
   const handleEdit = () => {
-    router.push(`/ninos/editar/${child.id}`);
+    router.push(`/ninos/editar/${child.id_nino}`);
   };
 
   const handleDelete = async () => {
@@ -36,19 +36,17 @@ export default function ChildCard({ child, onDelete, showActions = false }) {
     }
 
     setIsDeleting(true);
-    const result = await childrenService.delete(child.id);
+    const result = await childrenService.delete(child.id_nino);
     
     if (result.success) {
       alert(result.message);
-      if (onDelete) onDelete(child.id);
+      if (onDelete) onDelete(child.id_nino);
     } else {
       alert(result.error);
     }
     
     setIsDeleting(false);
   };
-
-  const age = childrenService.calculateAge(child.fechaNacimiento);
 
   return (
     <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
@@ -69,7 +67,7 @@ export default function ChildCard({ child, onDelete, showActions = false }) {
       <div className="flex justify-center gap-6 mb-4">
         <div className="text-center">
           <p className="text-xs text-gray-700 mb-1">Edad</p>
-          <p className="text-xl font-bold text-gray-900">{age}</p>
+          <p className="text-xl font-bold text-gray-900">{child.edad}</p>
         </div>
         
         <div className="text-center">

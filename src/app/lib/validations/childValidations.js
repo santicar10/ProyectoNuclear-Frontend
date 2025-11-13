@@ -26,9 +26,20 @@ export const validateFechaNacimiento = (fecha) => {
     return "La fecha de nacimiento no puede ser futura";
   }
 
-  const age = today.getFullYear() - birthDate.getFullYear();
+  // Calcular edad
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
   if (age > 18) {
     return "El niño debe ser menor de 18 años";
+  }
+
+  if (age < 0) {
+    return "La fecha de nacimiento es inválida";
   }
 
   return null;
@@ -63,22 +74,6 @@ export const validateDescripcion = (descripcion) => {
   return null;
 };
 
-export const validateComunidad = (comunidad) => {
-  if (!comunidad || comunidad.trim() === "") {
-    return "La comunidad es requerida";
-  }
-
-  if (comunidad.trim().length < 2) {
-    return "La comunidad debe tener al menos 2 caracteres";
-  }
-
-  if (comunidad.trim().length > 100) {
-    return "La comunidad no puede tener más de 100 caracteres";
-  }
-
-  return null;
-};
-
 export const validateChildForm = (formData) => {
   const errors = {};
 
@@ -93,9 +88,6 @@ export const validateChildForm = (formData) => {
 
   const descripcionError = validateDescripcion(formData.descripcion);
   if (descripcionError) errors.descripcion = descripcionError;
-
-  const comunidadError = validateComunidad(formData.comunidad);
-  if (comunidadError) errors.comunidad = comunidadError;
 
   return errors;
 };

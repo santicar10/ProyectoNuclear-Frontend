@@ -3,6 +3,24 @@ import { API_ENDPOINTS } from '@/app/lib/config/api.config';
 
 class ChildrenService {
   /**
+   * Calcula la edad basándose en la fecha de nacimiento
+   */
+  calculateAge(birthDate) {
+    if (!birthDate) return 0;
+    
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    
+    return age;
+  }
+
+  /**
    * Obtiene todos los niños
    * GET /api/ninos
    */
@@ -22,31 +40,12 @@ class ChildrenService {
   }
 
   /**
-   * Obtiene un niño por ID
-   * GET /api/ninos/{id}
+   * Obtiene un niño por ID (endpoint público)
+   * GET /api/ninos/publico/{id}
    */
   async getById(id) {
     try {
-      const response = await httpService.get(API_ENDPOINTS.CHILDREN_BY_ID(id));
-      return {
-        success: true,
-        data: response,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-  }
-
-  /**
-   * Obtiene niños disponibles para apadrinamiento
-   * GET /api/ninos/disponibles
-   */
-  async getAvailable() {
-    try {
-      const response = await httpService.get(API_ENDPOINTS.CHILDREN_AVAILABLE);
+      const response = await httpService.get(`/api/ninos/publico/${id}`);
       return {
         success: true,
         data: response,
@@ -65,13 +64,16 @@ class ChildrenService {
    */
   async create(childData) {
     try {
+      // Calcular edad a partir de fechaNacimiento
+      const edad = this.calculateAge(childData.fechaNacimiento);
+
       const response = await httpService.post(API_ENDPOINTS.CHILDREN, {
         nombre: childData.nombre,
-        fechaNacimiento: childData.fechaNacimiento,
+        edad: edad,
         genero: childData.genero,
         descripcion: childData.descripcion,
-        fotoUrl: childData.fotoUrl,
-        comunidad: childData.comunidad,
+        fotoUrl: childData.fotoUrl || null,
+        estadoApadrinamiento: 'Disponible',
       });
 
       return {
@@ -88,21 +90,30 @@ class ChildrenService {
   }
 
   /**
-   * Actualiza un niño existente
-   * PUT /api/ninos/{id}
+   * Actualiza un niño existente (actualización parcial)
+   * PATCH /api/ninos/{id}
    */
   async update(id, childData) {
     try {
-      const response = await httpService.put(
+      const updateData = {};
+      
+      if (childData.nombre) updateData.nombre = childData.nombre;
+      
+      // Calcular edad si cambió la fecha de nacimiento
+      if (childData.fechaNacimiento) {
+        updateData.edad = this.calculateAge(childData.fechaNacimiento);
+      }
+      
+      if (childData.genero) updateData.genero = childData.genero;
+      if (childData.descripcion) updateData.descripcion = childData.descripcion;
+      if (childData.fotoUrl !== undefined) updateData.foto_url = childData.fotoUrl;
+      if (childData.estadoApadrinamiento) {
+        updateData.estado_apadrinamiento = childData.estadoApadrinamiento;
+      }
+
+      const response = await httpService.patch(
         API_ENDPOINTS.CHILDREN_BY_ID(id),
-        {
-          nombre: childData.nombre,
-          fechaNacimiento: childData.fechaNacimiento,
-          genero: childData.genero,
-          descripcion: childData.descripcion,
-          fotoUrl: childData.fotoUrl,
-          comunidad: childData.comunidad,
-        }
+        updateData
       );
 
       return {
@@ -135,22 +146,6 @@ class ChildrenService {
         error: error.message,
       };
     }
-  }
-
-  /**
-   * Calcula la edad basándose en la fecha de nacimiento
-   */
-  calculateAge(birthDate) {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    
-    return age;
   }
 }
 

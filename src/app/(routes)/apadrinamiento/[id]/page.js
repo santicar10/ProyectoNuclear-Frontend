@@ -65,8 +65,6 @@ export default function ChildDetailPage() {
     );
   }
 
-  const age = childrenService.calculateAge(child.fechaNacimiento);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 p-6">
       <div className="max-w-6xl mx-auto">
@@ -87,15 +85,9 @@ export default function ChildDetailPage() {
               </h1>
               
               <div className="space-y-4 text-gray-700 text-base leading-relaxed">
-                {child.descripcion.split('\n').map((paragraph, index) => (
+                {child.descripcion?.split('\n').map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
-                ))}
-              </div>
-
-              <div className="mt-6 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-                <p className="text-sm text-gray-700">
-                  <strong>Comunidad:</strong> {child.comunidad}
-                </p>
+                )) || <p>{child.descripcion}</p>}
               </div>
             </div>
 
@@ -104,7 +96,7 @@ export default function ChildDetailPage() {
                 
                 <div className="bg-gray-300 rounded-2xl overflow-hidden mb-4 aspect-square">
                   <Image
-                    src={child.fotoUrl || "/placeholder-child.jpg"}
+                    src={child.foto || child.fotoUrl || "/placeholder-child.jpg"}
                     alt={child.nombre}
                     width={300}
                     height={300}
@@ -119,7 +111,7 @@ export default function ChildDetailPage() {
                 <div className="flex justify-center gap-6 mb-6">
                   <div className="text-center">
                     <p className="text-sm text-gray-700 mb-1">Edad</p>
-                    <p className="text-2xl font-bold text-gray-900">{age}</p>
+                    <p className="text-2xl font-bold text-gray-900">{child.edad}</p>
                   </div>
                   
                   <div className="text-center">

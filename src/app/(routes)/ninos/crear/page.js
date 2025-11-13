@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Input from "@components/common/inputs/Input";
 import Textarea from "@components/common/Textarea";
 import Select from "@components/common/Select";
@@ -15,23 +15,59 @@ const ArrowBackIcon = () => (
   </svg>
 );
 
-export default function CreateChildPage() {
+export default function EditChildPage() {
   const router = useRouter();
+  const params = useParams();
   const [formData, setFormData] = useState({
     nombre: "",
     fechaNacimiento: "",
     genero: "",
     descripcion: "",
     fotoUrl: "",
-    comunidad: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
   const genderOptions = [
     { value: "M", label: "Masculino" },
     { value: "F", label: "Femenino" },
   ];
+
+  useEffect(() => {
+    loadChild();
+  }, [params.id]);
+
+  const loadChild = async () => {
+    setIsFetching(true);
+    const result = await childrenService.getById(params.id);
+    
+    if (result.success) {
+      const child = result.data;
+      
+      // Calcular fecha de nacimiento aproximada desde la edad
+      // (esto es aproximado, idealmente el backend debería devolver la fecha real)
+      let fechaNacimiento = "";
+      if (child.edad !== undefined) {
+        const today = new Date();
+        const birthYear = today.getFullYear() - child.edad;
+        fechaNacimiento = `${birthYear}-01-01`; // Fecha aproximada
+      }
+      
+      setFormData({
+        nombre: child.nombre || "",
+        fechaNacimiento: child.fechaNacimiento || fechaNacimiento,
+        genero: child.genero || "",
+        descripcion: child.descripcion || "",
+        fotoUrl: child.foto || child.fotoUrl || "",
+      });
+    } else {
+      alert(result.error);
+      router.push('/ninos');
+    }
+    
+    setIsFetching(false);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,7 +92,7 @@ export default function CreateChildPage() {
     setErrors({});
     
     try {
-      const result = await childrenService.create(formData);
+      const result = await childrenService.update(params.id, formData);
 
       if (result.success) {
         alert(result.message);
@@ -75,6 +111,14 @@ export default function CreateChildPage() {
     router.push('/ninos');
   };
 
+  if (isFetching) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 flex items-center justify-center">
+        <div className="text-white text-2xl">Cargando...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 p-6">
       <div className="max-w-3xl mx-auto">
@@ -87,7 +131,7 @@ export default function CreateChildPage() {
             <span>Volver</span>
           </button>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Registrar Nuevo Niño</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Editar Información del Niño</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
@@ -125,18 +169,6 @@ export default function CreateChildPage() {
                 selectClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
               />
             </div>
-
-            <Input
-              label="Comunidad"
-              type="text"
-              name="comunidad"
-              placeholder="Ej: Vereda La Esperanza"
-              value={formData.comunidad}
-              onChange={handleChange}
-              error={errors.comunidad}
-              labelClassName="text-gray-800"
-              inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
-            />
 
             <Input
               label="URL de Foto (opcional)"
@@ -183,7 +215,7 @@ export default function CreateChildPage() {
                 isLoading={isLoading}
                 className="rounded-full flex-1 font-bold"
               >
-                Registrar Niño
+                Guardar Cambios
               </Button>
             </div>
           </form>
