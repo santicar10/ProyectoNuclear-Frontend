@@ -22,20 +22,16 @@ class HttpService {
    * Maneja las respuestas HTTP
    */
   async handleResponse(response) {
-    // Si la respuesta es exitosa
     if (response.ok) {
       const contentType = response.headers.get('content-type');
       
-      // Si es JSON, parsearlo
       if (contentType && contentType.includes('application/json')) {
         return await response.json();
       }
       
-      // Si es texto plano
       return await response.text();
     }
 
-    // Manejo de errores
     let errorMessage = 'Error en la petición';
 
     try {
@@ -49,7 +45,6 @@ class HttpService {
       }
     }
 
-    // Códigos de estado HTTP
     switch (response.status) {
       case 401:
         throw new Error('Credenciales inválidas o sesión expirada.');
@@ -61,7 +56,7 @@ class HttpService {
         throw new Error('Recurso no encontrado.');
       
       case 409:
-        throw new Error(errorMessage); // Conflicto (ej: correo ya registrado)
+        throw new Error(errorMessage);
       
       case 500:
         throw new Error('Error en el servidor. Intenta más tarde.');
@@ -79,7 +74,7 @@ class HttpService {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         method: 'GET',
         headers: this.getHeaders(options.headers),
-        credentials: 'include', // ✅ IMPORTANTE: Enviar cookies de sesión
+        credentials: 'include',
         ...options,
       });
 
@@ -99,7 +94,7 @@ class HttpService {
         method: 'POST',
         headers: this.getHeaders(options.headers),
         body: data ? JSON.stringify(data) : null,
-        credentials: 'include', // ✅ IMPORTANTE: Enviar cookies de sesión
+        credentials: 'include',
         ...options,
       });
 
@@ -119,13 +114,33 @@ class HttpService {
         method: 'PUT',
         headers: this.getHeaders(options.headers),
         body: data ? JSON.stringify(data) : null,
-        credentials: 'include', // ✅ IMPORTANTE: Enviar cookies de sesión
+        credentials: 'include',
         ...options,
       });
 
       return await this.handleResponse(response);
     } catch (error) {
       console.error('PUT Error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Petición PATCH
+   */
+  async patch(endpoint, data = null, options = {}) {
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'PATCH',
+        headers: this.getHeaders(options.headers),
+        body: data ? JSON.stringify(data) : null,
+        credentials: 'include',
+        ...options,
+      });
+
+      return await this.handleResponse(response);
+    } catch (error) {
+      console.error('PATCH Error:', error);
       throw error;
     }
   }
@@ -138,7 +153,7 @@ class HttpService {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         method: 'DELETE',
         headers: this.getHeaders(options.headers),
-        credentials: 'include', // ✅ IMPORTANTE: Enviar cookies de sesión
+        credentials: 'include',
         ...options,
       });
 

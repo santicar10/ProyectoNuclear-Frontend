@@ -1,3 +1,4 @@
+// src/app/lib/config/api.config.js
 /**
  * Configuración de la API
  * Sistema basado en SESIONES HTTP (sin tokens JWT)
@@ -20,6 +21,11 @@ export const API_ENDPOINTS = {
   VERIFY_CODE: '/api/usuarios/verificar-codigo',
   RESET_PASSWORD: '/api/usuarios/restablecer-password',
   RESEND_CODE: '/api/usuarios/reenviar-codigo',
+
+  // Niños
+  CHILDREN: '/api/ninos',
+  CHILDREN_BY_ID: (id) => `/api/ninos/${id}`,
+  CHILDREN_AVAILABLE: '/api/ninos/disponibles',
 };
 
 // Configuración de headers por defecto
