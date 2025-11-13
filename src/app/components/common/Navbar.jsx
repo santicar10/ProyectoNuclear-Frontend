@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
@@ -12,10 +12,28 @@ export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [userName, setUserName] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     checkAuth();
   }, [pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
 
   const checkAuth = () => {
     const userData = authService.getUserData();
@@ -36,6 +54,7 @@ export default function Navbar() {
       setIsAuthenticated(false);
       setUserRole(null);
       setUserName("");
+      setShowDropdown(false);
       router.push("/");
     }
   };
@@ -44,7 +63,15 @@ export default function Navbar() {
     router.push("/ninos/crear");
   };
 
-  // Rutas donde NO se muestra el navbar
+  const getInitials = (name) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  };
+
   const hideNavbarRoutes = ["/login", "/registrar"];
   if (hideNavbarRoutes.includes(pathname)) {
     return null;
@@ -110,25 +137,46 @@ export default function Navbar() {
         {/* Acciones */}
         <div className="flex items-center gap-3 text-[#1A125C]">
           {isAuthenticated ? (
-            <>
+            <div className="flex items-center gap-3">
               {userRole === "administrador" && (
                 <button
                   onClick={handleCreateChild}
                   className="text-sm px-4 py-1 rounded-full bg-yellow-400 hover:bg-yellow-500 transition font-medium"
                 >
-                  + Nuevo Niño
+                  Crear Niño
                 </button>
               )}
-              <span className="hidden md:inline text-sm text-gray-600">
-                Hola, {userName}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="text-sm px-4 py-1 rounded-full border border-black/70 hover:bg-black hover:text-white transition"
-              >
-                Cerrar Sesión
-              </button>
-            </>
+              
+              {/* Menú de perfil con dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-white font-semibold flex items-center justify-center hover:shadow-lg transition-shadow"
+                >
+                  {getInitials(userName)}
+                </button>
+
+                {/* Dropdown */}
+                {showDropdown && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                    <div className="px-4 py-3 border-b border-gray-200">
+                      <p className="text-sm font-semibold text-gray-900">{userName}</p>
+                      <p className="text-xs text-gray-500 capitalize">{userRole}</p>
+                    </div>
+                    
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           ) : (
             <>
               <Link

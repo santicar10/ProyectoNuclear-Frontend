@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Button from "@components/common/Button";
 import childrenService from "@/app/lib/services/children.service";
+import authService from "@/app/lib/services/auth.service";
 
 const ArrowBackIcon = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,10 +19,17 @@ export default function ChildDetailPage() {
   const [child, setChild] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    checkAuth();
     loadChildDetail();
   }, [params.id]);
+
+  const checkAuth = () => {
+    const userData = authService.getUserData();
+    setIsAuthenticated(!!userData);
+  };
 
   const loadChildDetail = async () => {
     setIsLoading(true);
@@ -41,6 +49,11 @@ export default function ChildDetailPage() {
   };
 
   const handleSponsor = () => {
+    if (!isAuthenticated) {
+      alert("Debes iniciar sesión para apadrinar");
+      router.push("/login");
+      return;
+    }
     alert(`Iniciando proceso de apadrinamiento para ${child.nombre}`);
   };
 
