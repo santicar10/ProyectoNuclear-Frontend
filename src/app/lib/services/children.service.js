@@ -71,12 +71,9 @@ async getById(id) {
    */
   async create(childData) {
     try {
-      // Calcular edad a partir de fechaNacimiento
-      const edad = this.calculateAge(childData.fechaNacimiento);
-
       const response = await httpService.post(API_ENDPOINTS.CHILDREN, {
         nombre: childData.nombre,
-        edad: edad,
+        fechaNacimiento: childData.fechaNacimiento, 
         genero: childData.genero,
         descripcion: childData.descripcion,
         fotoUrl: childData.fotoUrl || null,
@@ -106,9 +103,8 @@ async getById(id) {
       
       if (childData.nombre) updateData.nombre = childData.nombre;
       
-      // Calcular edad si cambió la fecha de nacimiento
       if (childData.fechaNacimiento) {
-        updateData.edad = this.calculateAge(childData.fechaNacimiento);
+        updateData.fecha_nacimiento = childData.fechaNacimiento;
       }
       
       if (childData.genero) updateData.genero = childData.genero;

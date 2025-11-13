@@ -1,148 +1,133 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
 import Image from "next/image";
-import Button from "@components/common/Button";
-import childrenService from "@/app/lib/services/children.service";
+import Navbar from "@components/common/Navbar";
 
-const ArrowBackIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-  </svg>
-);
+const childrenData = [
+  {
+    id: 1,
+    name: "Santiago Cardona Sanchez",
+    age: 8,
+    gender: "♂",
+    image: "/children/santiago.jpg",
+    dream: "sueña con ser maestro para enseñar a los niños de su comunidad.",
+  },
+  {
+    id: 2,
+    name: "Jairo Puchaina",
+    age: 4,
+    gender: "♂",
+    image: "/children/jairo.jpg",
+    dream: "sueña con ser futbolista profesional para viajar por el mundo.",
+  },
+  {
+    id: 3,
+    name: "Yanfri Asprilla",
+    age: 9,
+    gender: "♀",
+    image: "/children/yanfri.jpg",
+    dream: "sueña con ser cantante y que la reconozcan a nivel mundial.",
+  },
+  {
+    id: 4,
+    name: "Socorro De las Nieves",
+    age: 13,
+    gender: "♀",
+    image: "/children/socorro.jpg",
+    dream: "sueña con tener una familia unida.",
+  },
+  // añade más objetos para las tarjetas de abajo…
+];
 
-export default function ChildDetailPage() {
-  const params = useParams();
-  const [child, setChild] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSponsorLoading, setIsSponsorLoading] = useState(false);
-
-  useEffect(() => {
-    loadChild();
-  }, [params.id]);
-
-  const loadChild = async () => {
-    setIsLoading(true);
-    const result = await childrenService.getById(params.id);
-    
-    if (result.success) {
-      setChild(result.data);
-    } else {
-      alert(result.error);
-    }
-    
-    setIsLoading(false);
-  };
-
-  const handleSponsor = async () => {
-    setIsSponsorLoading(true);
-    setTimeout(() => {
-      setIsSponsorLoading(false);
-      alert("¡Gracias por tu interés en apadrinar!");
-    }, 1000);
-  };
-
-  const handleBack = () => {
-    window.history.back();
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 flex items-center justify-center">
-        <div className="text-white text-2xl">Cargando...</div>
-      </div>
-    );
-  }
-
-  if (!child) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-8">
-          <p className="text-red-600">No se encontró el niño</p>
-        </div>
-      </div>
-    );
-  }
-
+export default function ApadrinamientoPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
-          
-          <button
-            onClick={handleBack}
-            className="mb-8 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowBackIcon />
-          </button>
+    <main className="min-h-screen bg-white">
+      {/* Navbar */}
+      <Navbar />
 
-          <div className="grid md:grid-cols-3 gap-8">
-            
-            <div className="md:col-span-2">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Descripción
+      {/* Dejamos espacio por el navbar fijo */}
+      <div className="pt-20">
+        {/* HERO SUPERIOR */}
+        <section className="w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3">
+            {/* Columna izquierda: gradiente con título */}
+            <div className="col-span-2 bg-gradient-to-r from-[#FFB347] to-[#FF6B6B] text-white px-8 md:px-16 py-16 flex items-center">
+              <h1 className="text-3xl md:text-5xl font-extrabold leading-tight uppercase">
+                Encuentra
+                <br />
+                a quien apadrinar
               </h1>
-              
-              <div className="space-y-4 text-gray-700 text-base leading-relaxed">
-                {child.descripcion?.split('\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                )) || <p>{child.descripcion}</p>}
-              </div>
             </div>
 
-            <div className="md:col-span-1">
-              <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-3xl p-6 shadow-xl">
-                
-                <div className="bg-gray-300 rounded-2xl overflow-hidden mb-4 aspect-square">
-                  <Image
-                    src={child.foto || child.fotoUrl || "/placeholder-child.jpg"}
-                    alt={child.nombre}
-                    width={300}
-                    height={300}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+            {/* Columna derecha: fondo rojo + ilustración */}
+            <div className="bg-[#F85C5C] flex items-center justify-center py-6 relative">
+              <Image
+                src="/hero-kids.png" // pon aquí tu ilustración
+                alt="Niños felices"
+                width={260}
+                height={220}
+                className="object-contain"
+              />
+            </div>
+          </div>
+        </section>
 
-                <h2 className="text-xl font-bold text-gray-900 text-center mb-4">
-                  {child.nombre}
+        {/* SECCIÓN DE TARJETAS */}
+        <section className="px-6 md:px-12 py-12 md:py-16">
+          <div className="grid gap-8 md:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {childrenData.map((child) => (
+              <article
+                key={child.id}
+                className="bg-[#F9DC6B] rounded-[40px] px-6 pt-6 pb-5 shadow-[0_18px_40px_rgba(0,0,0,0.12)] flex flex-col"
+              >
+                {/* Nombre */}
+                <h2 className="text-center text-sm md:text-base font-semibold mb-4">
+                  {child.name}
                 </h2>
 
-                <div className="flex justify-center gap-6 mb-6">
-                  <div className="text-center">
-                    <p className="text-sm text-gray-700 mb-1">Edad</p>
-                    <p className="text-2xl font-bold text-gray-900">{child.edad}</p>
+                {/* Age / Gender */}
+                <div className="flex justify-center gap-4 mb-4">
+                  <div className="bg-[#FBE7A1] rounded-full px-4 py-2 text-center text-xs">
+                    <div className="font-semibold">Age</div>
+                    <div className="text-lg md:text-xl font-bold">
+                      {child.age}
+                    </div>
                   </div>
-                  
-                  <div className="text-center">
-                    <p className="text-sm text-gray-700 mb-1">Género</p>
-                    <div className="flex justify-center">
-                      <svg className="w-8 h-8 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
-                        {child.genero === 'M' ? (
-                          <path d="M12 2C9.243 2 7 4.243 7 7c0 2.206 1.454 4.07 3.438 4.723L10 13.5v2.25H8.5V18h1.5v2h2v-2h1.5v-2.25H12v-2.25l-.438-1.777C13.546 11.07 15 9.206 15 7c0-2.757-2.243-5-5-5z"/>
-                        ) : (
-                          <path d="M12 2c-2.757 0-5 2.243-5 5s2.243 5 5 5 5-2.243 5-5-2.243-5-5-5zm0 8c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3-1.346 3-3 3zm0 2c-3.866 0-7 3.134-7 7v3h2v-3c0-2.757 2.243-5 5-5s5 2.243 5 5v3h2v-3c0-3.866-3.134-7-7-7z"/>
-                        )}
-                      </svg>
+                  <div className="bg-[#FBE7A1] rounded-full px-4 py-2 text-center text-xs">
+                    <div className="font-semibold">Gender</div>
+                    <div className="text-lg md:text-xl">
+                      {child.gender}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex justify-center">
-                  <Button
-                    onClick={handleSponsor}
-                    isLoading={isSponsorLoading}
-                    variant="warning"
-                    className="rounded-full px-8 py-3 font-bold shadow-md hover:shadow-lg border-2 border-gray-900"
-                  >
-                    Apadrinar
-                  </Button>
+                {/* Imagen */}
+                <div className="overflow-hidden rounded-[24px] mb-4 h-40">
+                  <Image
+                    src={child.image}
+                    alt={child.name}
+                    width={300}
+                    height={200}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
-              </div>
-            </div>
+
+                {/* Descripción */}
+                <p className="text-xs md:text-sm leading-snug flex-1">
+                  {child.dream}
+                </p>
+
+                {/* Botón */}
+                <div className="mt-4 flex justify-end">
+                  <button className="text-xs md:text-sm px-4 py-1 border border-black rounded-full hover:bg-black hover:text-white transition">
+                    Ver más
+                  </button>
+                </div>
+              </article>
+            ))}
           </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
