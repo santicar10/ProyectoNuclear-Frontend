@@ -56,10 +56,10 @@ export default function Navbar() {
         {/* Logo + nombre */}
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition">
           <Image
-            src="/logo.png"
+            src="/huahuacuna_logo.png"
             alt="Huahuacuna"
-            width={32}
-            height={32}
+            width={40}
+            height={40}
             className="rounded-full"
             priority
           />
@@ -79,17 +79,22 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link href="#" className="hover:text-yellow-500 transition">
+            <Link href="/voluntariado" className="hover:text-yellow-500 transition">
+              Voluntariado
+            </Link>
+          </li>
+          <li>
+            <Link href="/evento" className="hover:text-yellow-500 transition">
               Eventos
             </Link>
           </li>
           <li>
-            <Link href="#" className="hover:text-yellow-500 transition">
+            <Link href="/donaciones" className="hover:text-yellow-500 transition">
               Donaciones
             </Link>
           </li>
           <li>
-            <Link href="#" className="hover:text-yellow-500 transition">
+            <Link href="/sobre-nosotros" className="hover:text-yellow-500 transition">
               Sobre Nosotros
             </Link>
           </li>

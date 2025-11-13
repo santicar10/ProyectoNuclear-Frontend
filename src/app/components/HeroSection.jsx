@@ -64,7 +64,7 @@ export default function HeroSection() {
           {/* === Imagen principal === */}
           <div className="mt-10 md:mt-0">
             <Image
-              src="/hero-img.png"  
+              src="/children.svg"  
               alt="Niña y niño sonrientes"
               width={420}
               height={520}
