@@ -105,15 +105,15 @@ export default function EditChildPage() {
 
   if (isFetching) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 flex items-center justify-center">
-        <div className="text-white text-2xl">Cargando...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-24">
+        <div className="text-gray-600 text-2xl">Cargando...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 p-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
+      <div className="max-w-3xl mx-auto px-6">
         <div className="bg-white rounded-3xl shadow-2xl p-8">
           <button
             onClick={handleBack}
@@ -125,7 +125,7 @@ export default function EditChildPage() {
 
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Editar Información del Niño</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 text-[#1A125C]">
             <Input
               label="Nombre Completo"
               type="text"
@@ -161,18 +161,6 @@ export default function EditChildPage() {
                 selectClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
               />
             </div>
-
-            <Input
-              label="Comunidad"
-              type="text"
-              name="comunidad"
-              placeholder="Ej: Vereda La Esperanza"
-              value={formData.comunidad}
-              onChange={handleChange}
-              error={errors.comunidad}
-              labelClassName="text-gray-800"
-              inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
-            />
 
             <Input
               label="URL de Foto (opcional)"

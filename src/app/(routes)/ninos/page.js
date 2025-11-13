@@ -45,16 +45,16 @@ export default function ChildrenListPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 flex items-center justify-center">
-        <div className="text-white text-2xl">Cargando...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-24">
+        <div className="text-gray-600 text-2xl">Cargando...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-8 max-w-md">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-24">
+        <div className="bg-white rounded-2xl p-8 max-w-md shadow-xl">
           <p className="text-red-600 text-center">{error}</p>
           <Button onClick={loadChildren} variant="warning" fullWidth className="mt-4 rounded-lg">
             Reintentar
@@ -65,10 +65,10 @@ export default function ChildrenListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-white drop-shadow-lg">
+          <h1 className="text-4xl font-bold text-gray-900">
             Gestión de Niños
           </h1>
           <Button
@@ -97,7 +97,7 @@ export default function ChildrenListPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {children.map((child) => (
               <ChildCard
-                key={child.id}
+                key={child.id_nino || child.id}
                 child={child}
                 onDelete={handleDelete}
                 showActions={true}

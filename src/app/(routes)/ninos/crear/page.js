@@ -75,8 +75,8 @@ export default function CreateChildPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-orange-300 to-pink-500 p-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
+      <div className="max-w-3xl mx-auto px-6">
         <div className="bg-white rounded-3xl shadow-2xl p-8">
           <button
             onClick={handleBack}
@@ -88,7 +88,7 @@ export default function CreateChildPage() {
 
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Registrar Nuevo Niño</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 text-[#1A125C]">
             <Input
               label="Nombre Completo"
               type="text"

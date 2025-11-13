@@ -1,132 +1,154 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import Navbar from "@components/common/Navbar";
+import Button from "@components/common/Button";
+import childrenService from "@/app/lib/services/children.service";
 
-const childrenData = [
-  {
-    id: 1,
-    name: "Santiago Cardona Sanchez",
-    age: 8,
-    gender: "♂",
-    image: "/children/santiago.jpg",
-    dream: "sueña con ser maestro para enseñar a los niños de su comunidad.",
-  },
-  {
-    id: 2,
-    name: "Jairo Puchaina",
-    age: 4,
-    gender: "♂",
-    image: "/children/jairo.jpg",
-    dream: "sueña con ser futbolista profesional para viajar por el mundo.",
-  },
-  {
-    id: 3,
-    name: "Yanfri Asprilla",
-    age: 9,
-    gender: "♀",
-    image: "/children/yanfri.jpg",
-    dream: "sueña con ser cantante y que la reconozcan a nivel mundial.",
-  },
-  {
-    id: 4,
-    name: "Socorro De las Nieves",
-    age: 13,
-    gender: "♀",
-    image: "/children/socorro.jpg",
-    dream: "sueña con tener una familia unida.",
-  },
-  // añade más objetos para las tarjetas de abajo…
-];
+const ArrowBackIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+  </svg>
+);
 
-export default function ApadrinamientoPage() {
+export default function ChildDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const [child, setChild] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    loadChildDetail();
+  }, [params.id]);
+
+  const loadChildDetail = async () => {
+    setIsLoading(true);
+    const result = await childrenService.getById(params.id);
+    
+    if (result.success) {
+      setChild(result.data);
+    } else {
+      setError(result.error);
+    }
+    
+    setIsLoading(false);
+  };
+
+  const handleBack = () => {
+    router.push('/apadrinamiento');
+  };
+
+  const handleSponsor = () => {
+    alert(`Iniciando proceso de apadrinamiento para ${child.nombre}`);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center pt-20">
+        <div className="text-gray-600 text-2xl">Cargando...</div>
+      </div>
+    );
+  }
+
+  if (error || !child) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center pt-20">
+        <div className="bg-white rounded-2xl p-8 max-w-md text-center shadow-xl">
+          <p className="text-red-600 mb-4">{error || "Niño no encontrado"}</p>
+          <Button onClick={handleBack} variant="warning" className="rounded-full">
+            Volver al catálogo
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-white">
-      {/* Navbar */}
-      <Navbar />
+    <main className="min-h-screen bg-gray-50 pt-20">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <button
+          onClick={handleBack}
+          className="mb-8 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors group"
+        >
+          <ArrowBackIcon />
+          <span className="font-medium group-hover:underline">Volver al catálogo</span>
+        </button>
 
-      {/* Dejamos espacio por el navbar fijo */}
-      <div className="pt-20">
-        {/* HERO SUPERIOR */}
-        <section className="w-full">
-          <div className="grid grid-cols-1 md:grid-cols-3">
-            {/* Columna izquierda: gradiente con título */}
-            <div className="col-span-2 bg-gradient-to-r from-[#FFB347] to-[#FF6B6B] text-white px-8 md:px-16 py-16 flex items-center">
-              <h1 className="text-3xl md:text-5xl font-extrabold leading-tight uppercase">
-                Encuentra
-                <br />
-                a quien apadrinar
-              </h1>
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div className="grid md:grid-cols-5 gap-0">
+            <div className="md:col-span-3 p-8 md:p-12 space-y-6">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-[#1A125C] mb-3">
+                  Descripción
+                </h1>
+                <div className="w-20 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full"></div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-gray-700 leading-relaxed text-justify text-base md:text-lg">
+                  {child.descripcion || "Sin descripción disponible."}
+                </p>
+                
+                {child.comunidad && (
+                  <div className="mt-6 p-4 bg-gray-50 rounded-xl border-l-4 border-yellow-400">
+                    <p className="text-sm text-gray-600 font-medium">Comunidad:</p>
+                    <p className="text-gray-800">{child.comunidad}</p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Columna derecha: fondo rojo + ilustración */}
-            <div className="bg-[#F85C5C] flex items-center justify-center py-6 relative">
-              <Image
-                src="/hero-kids.png" // pon aquí tu ilustración
-                alt="Niños felices"
-                width={260}
-                height={220}
-                className="object-contain"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* SECCIÓN DE TARJETAS */}
-        <section className="px-6 md:px-12 py-12 md:py-16">
-          <div className="grid gap-8 md:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {childrenData.map((child) => (
-              <article
-                key={child.id}
-                className="bg-[#F9DC6B] rounded-[40px] px-6 pt-6 pb-5 shadow-[0_18px_40px_rgba(0,0,0,0.12)] flex flex-col"
-              >
-                {/* Nombre */}
-                <h2 className="text-center text-sm md:text-base font-semibold mb-4">
-                  {child.name}
-                </h2>
-
-                {/* Age / Gender */}
-                <div className="flex justify-center gap-4 mb-4">
-                  <div className="bg-[#FBE7A1] rounded-full px-4 py-2 text-center text-xs">
-                    <div className="font-semibold">Age</div>
-                    <div className="text-lg md:text-xl font-bold">
-                      {child.age}
-                    </div>
-                  </div>
-                  <div className="bg-[#FBE7A1] rounded-full px-4 py-2 text-center text-xs">
-                    <div className="font-semibold">Gender</div>
-                    <div className="text-lg md:text-xl">
-                      {child.gender}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Imagen */}
-                <div className="overflow-hidden rounded-[24px] mb-4 h-40">
+            <div className="md:col-span-2 bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center p-8 md:p-12">
+              <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-[40px] p-6 md:p-8 shadow-2xl max-w-sm w-full">
+                <div className="bg-gray-300 rounded-[24px] overflow-hidden mb-6 aspect-square">
                   <Image
-                    src={child.image}
-                    alt={child.name}
-                    width={300}
-                    height={200}
-                    className="h-full w-full object-cover"
+                    src={child.fotoUrl || child.foto_url || "/placeholder-child.jpg"}
+                    alt={child.nombre}
+                    width={400}
+                    height={400}
+                    className="w-full h-full object-cover"
                   />
                 </div>
 
-                {/* Descripción */}
-                <p className="text-xs md:text-sm leading-snug flex-1">
-                  {child.dream}
-                </p>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-6">
+                  {child.nombre}
+                </h2>
 
-                {/* Botón */}
-                <div className="mt-4 flex justify-end">
-                  <button className="text-xs md:text-sm px-4 py-1 border border-black rounded-full hover:bg-black hover:text-white transition">
-                    Ver más
-                  </button>
+                <div className="flex justify-center gap-6 mb-8">
+                  <div className="bg-[#FBE7A1] rounded-full px-5 py-3 text-center">
+                    <p className="text-xs text-gray-700 mb-1 font-semibold">Age</p>
+                    <p className="text-2xl font-bold text-gray-900">{child.edad || 0}</p>
+                  </div>
+                  
+                  <div className="bg-[#FBE7A1] rounded-full px-5 py-3 text-center">
+                    <p className="text-xs text-gray-700 mb-1 font-semibold">Gender</p>
+                    <div className="flex justify-center">
+                      <svg className="w-8 h-8 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+                        {child.genero === 'M' || child.genero === 'masculino' ? (
+                          <path d="M12 2C9.243 2 7 4.243 7 7c0 2.206 1.454 4.07 3.438 4.723L10 13.5v2.25H8.5V18h1.5v2h2v-2h1.5v-2.25H12v-2.25l-.438-1.777C13.546 11.07 15 9.206 15 7c0-2.757-2.243-5-5-5z"/>
+                        ) : (
+                          <path d="M12 2c-2.757 0-5 2.243-5 5s2.243 5 5 5 5-2.243 5-5-2.243-5-5-5zm0 8c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3-1.346 3-3 3zm0 2c-3.866 0-7 3.134-7 7v3h2v-3c0-2.757 2.243-5 5-5s5 2.243 5 5v3h2v-3c0-3.866-3.134-7-7-7z"/>
+                        )}
+                      </svg>
+                    </div>
+                  </div>
                 </div>
-              </article>
-            ))}
+
+                <div className="flex justify-center">
+                  <Button
+                    onClick={handleSponsor}
+                    variant="warning"
+                    className="rounded-full px-8 py-3 font-bold text-base md:text-lg shadow-lg hover:shadow-xl border-2 border-gray-900 transition-all hover:scale-105"
+                  >
+                    Apadrinar
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
       </div>
     </main>
   );

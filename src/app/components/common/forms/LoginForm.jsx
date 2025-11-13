@@ -85,7 +85,7 @@ export default function LoginForm() {
         
         // Redirigir al dashboard o página principal
         // Ajusta la ruta según tu aplicación
-        router.push('/dashboard');
+        router.push('/');
         
         // O mostrar mensaje de éxito
         // alert("¡Bienvenido de vuelta!");
