@@ -39,24 +39,31 @@ class ChildrenService {
     }
   }
 
-  /**
-   * Obtiene un niño por ID (endpoint público)
-   * GET /api/ninos/publico/{id}
-   */
-  async getById(id) {
-    try {
-      const response = await httpService.get(`/api/ninos/publico/${id}`);
-      return {
-        success: true,
-        data: response,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
+/**
+ * Obtiene un niño por ID (endpoint público)
+ * GET /api/ninos/publico/{id}
+ */
+async getById(id) {
+  if (!id || id === 'undefined' || id === 'null') {
+    return {
+      success: false,
+      error: 'ID de niño inválido',
+    };
   }
+
+  try {
+    const response = await httpService.get(`/api/ninos/publico/${id}`);
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
 
   /**
    * Crea un nuevo niño
@@ -128,12 +135,20 @@ class ChildrenService {
       };
     }
   }
+  
 
-  /**
+    /**
    * Elimina un niño
    * DELETE /api/ninos/{id}
    */
   async delete(id) {
+    if (!id || id === 'undefined' || id === 'null') {
+      return {
+        success: false,
+        error: 'ID de niño inválido',
+      };
+    }
+
     try {
       await httpService.delete(API_ENDPOINTS.CHILDREN_BY_ID(id));
       return {
