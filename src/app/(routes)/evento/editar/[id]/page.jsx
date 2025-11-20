@@ -5,15 +5,9 @@ import { useRouter, useParams } from "next/navigation";
 import Input from "@components/common/inputs/Input";
 import Textarea from "@components/common/Textarea";
 import Button from "@components/common/Button";
-// ajusta estas rutas según tu estructura
+import { ArrowBackIcon } from "@components/common/icons";
 import eventsService from "@/app/lib/services/events.service";
 import { validateEventForm, hasErrors } from "@/app/lib/validations/eventValidations";
-
-const ArrowBackIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-  </svg>
-);
 
 export default function EditEventPage() {
   const router = useRouter();
@@ -134,7 +128,7 @@ export default function EditEventPage() {
               onChange={handleChange}
               error={errors.nombre}
               labelClassName="text-gray-800"
-              inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+              inputClassName="input-huahuacuna"
             />
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -146,7 +140,7 @@ export default function EditEventPage() {
                 onChange={handleChange}
                 error={errors.fechaInicio}
                 labelClassName="text-gray-800"
-                inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+                inputClassName="input-huahuacuna"
               />
 
               <Input
@@ -157,7 +151,7 @@ export default function EditEventPage() {
                 onChange={handleChange}
                 error={errors.fechaFin}
                 labelClassName="text-gray-800"
-                inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+                inputClassName="input-huahuacuna"
               />
             </div>
 
@@ -170,7 +164,7 @@ export default function EditEventPage() {
               onChange={handleChange}
               error={errors.lugar}
               labelClassName="text-gray-800"
-              inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+              inputClassName="input-huahuacuna"
             />
 
             <Input
@@ -182,7 +176,7 @@ export default function EditEventPage() {
               onChange={handleChange}
               error={errors.fotoUrl}
               labelClassName="text-gray-800"
-              inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+              inputClassName="input-huahuacuna"
             />
 
             <Textarea
@@ -194,7 +188,7 @@ export default function EditEventPage() {
               error={errors.descripcion}
               rows={6}
               labelClassName="text-gray-800"
-              textareaClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+              textareaClassName="input-huahuacuna"
             />
 
             {errors.submit && (

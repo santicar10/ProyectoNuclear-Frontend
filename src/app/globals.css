@@ -32,3 +32,18 @@ body {
   -webkit-line-clamp: 3;
   line-clamp: 3;
 }
+
+/* Clases personalizadas Huahuacuna */
+@layer components {
+  .input-huahuacuna {
+    @apply bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500;
+  }
+
+  .btn-huahuacuna {
+    @apply bg-yellow-400 hover:bg-yellow-500 text-[#251264] font-medium px-8 py-2 rounded-full transition;
+  }
+
+  .gradient-huahuacuna {
+    background: linear-gradient(90deg, #FFCD00 0%, #FA5E60 100%);
+  }
+}

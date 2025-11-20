@@ -1,37 +1,26 @@
-// src/app/(routes)/apadrinamiento/page.js
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import PageHeader from "@components/common/PageHeader";
+import ChildCard from "@components/children/ChildCard";
 import childrenService from "@/app/lib/services/children.service";
-import authService from "@/app/lib/services/auth.service";
+import { useAuth } from "@/app/hooks/useAuth";
 
 export default function ApadrinamientoPage() {
   const router = useRouter();
+  const { isAuthenticated, userRole, isLoading: authLoading } = useAuth();
   const [children, setChildren] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    checkAuthAndLoad();
-  }, []);
-
-  const checkAuthAndLoad = () => {
-    const userData = authService.getUserData();
-    if (userData) {
-      setIsAuthenticated(true);
-      setUserRole(userData.rol);
-      // Solo cargar niños si está autenticado
+    if (!authLoading && isAuthenticated) {
       loadChildren();
-    } else {
-      setIsAuthenticated(false);
-      setUserRole(null);
+    } else if (!authLoading) {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated, authLoading]);
 
   const loadChildren = async () => {
     setIsLoading(true);
@@ -52,7 +41,7 @@ export default function ApadrinamientoPage() {
     router.push(`/apadrinamiento/${childId}`);
   };
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center pt-20">
         <div className="text-gray-600 text-2xl">Cargando...</div>
@@ -64,28 +53,12 @@ export default function ApadrinamientoPage() {
   if (!isAuthenticated) {
     return (
       <main className="min-h-screen bg-white flex flex-col items-center">
-        {/* HERO SUPERIOR */}
-        <section className="w-full mt-20">
-          <div className="grid grid-cols-1 md:grid-cols-3 relative overflow-hidden">
-            <div className="col-span-2 flex items-center justify-center py-10 md:py-16 relative" style={{background: 'linear-gradient(90deg, #FFCD00 0%, #FA5E60 100%)'}}>
-              <h1 className="text-white text-3xl md:text-5xl font-extrabold leading-tight uppercase">
-                encuentra a quien apadrinar
-              </h1>
-            </div>
-            <div className="flex items-center justify-center py-6 relative" style={{backgroundColor: '#FA5E60'}}>
-              <div className="relative w-full h-full min-h-[150px]">
-                <Image
-                  src="/family.svg" 
-                  alt="Voluntariado"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        <PageHeader 
+          title="encuentra a quien apadrinar" 
+          imageSrc="/family.svg"
+          imageAlt="Voluntariado"
+        />
 
-        {/* Mensaje para usuarios no autenticados */}
         <section className="w-full flex-1 flex items-center justify-center px-6 py-20">
           <div className="max-w-2xl mx-auto text-center">
             <div className="mb-8">
@@ -158,25 +131,11 @@ export default function ApadrinamientoPage() {
   if (error) {
     return (
       <main className="min-h-screen bg-white flex flex-col items-center pt-20">
-        <section className="w-full">
-          <div className="grid grid-cols-1 md:grid-cols-3 relative overflow-hidden">
-            <div className="col-span-2 flex items-center justify-center py-10 md:py-16 relative" style={{background: 'linear-gradient(90deg, #FFCD00 0%, #FA5E60 100%)'}}>
-              <h1 className="text-white text-3xl md:text-5xl font-extrabold leading-tight uppercase">
-                encuentra a quien apadrinar
-              </h1>
-            </div>
-            <div className="flex items-center justify-center py-6 relative" style={{backgroundColor: '#FA5E60'}}>
-              <div className="relative w-full h-full min-h-[150px]">
-                <Image
-                  src="/family.svg" 
-                  alt="Voluntariado"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        <PageHeader 
+          title="encuentra a quien apadrinar" 
+          imageSrc="/family.svg"
+          imageAlt="Voluntariado"
+        />
         
         <div className="flex items-center justify-center py-20 px-6">
           <div className="bg-white rounded-2xl p-8 max-w-md text-center shadow-xl">
@@ -196,28 +155,12 @@ export default function ApadrinamientoPage() {
   // Vista para usuarios autenticados con datos
   return (
     <main className="min-h-screen bg-white flex flex-col items-center">
-      {/* HERO SUPERIOR */}
-      <section className="w-full mt-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 relative overflow-hidden">
-          <div className="col-span-2 flex items-center justify-center py-10 md:py-16 relative" style={{background: 'linear-gradient(90deg, #FFCD00 0%, #FA5E60 100%)'}}>
-            <h1 className="text-white text-3xl md:text-5xl font-extrabold leading-tight uppercase">
-              encuentra a quien apadrinar
-            </h1>
-          </div>
-          <div className="flex items-center justify-center py-6 relative" style={{backgroundColor: '#FA5E60'}}>
-            <div className="relative w-full h-full min-h-[150px]">
-              <Image
-                src="/family.svg" 
-                alt="Voluntariado"
-                fill
-                className="object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHeader 
+        title="encuentra a quien apadrinar" 
+        imageSrc="/family.svg"
+        imageAlt="Voluntariado"
+      />
 
-      {/* SECCIÓN DE TARJETAS */}
       <section className="px-6 md:px-12 py-12 md:py-16">
         {children.length === 0 ? (
           <div className="text-center py-12">
@@ -226,49 +169,11 @@ export default function ApadrinamientoPage() {
         ) : (
           <div className="grid gap-8 md:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-items-center">
             {children.map((child) => (
-              <article
+              <ChildCard
                 key={child.id_nino || child.id}
-                className="bg-[#F9DC6B] text-[#251264] rounded-[40px] w-[350px] h-[460px] px-6 pt-6 pb-5 shadow-[0_18px_40px_rgba(0,0,0,0.12)] flex flex-col"
-              >
-                <h2 className="text-center text-sm md:text-base font-semibold mb-4">
-                  {child.nombre}
-                </h2>
-
-                <div className="flex justify-center gap-4 mb-4">
-                  <div className="bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center text-s">
-                    <div className="font-semibold">Edad</div>
-                    <div className="mt-0.5 text-lg md:text-xs font-semi-bold">{child.edad || 0}</div>
-                  </div>
-                  <div className="bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center text-s">
-                    <div className="font-semibold">Genero</div>
-                    <div className="mt-0.5 text-lg md:text-xs font-semi-bold">
-                      {child.genero === 'M' ? 'M' : 'F'}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="overflow-hidden rounded-[24px] mb-3 h-[200px]">
-                  <Image
-                    src={child.fotoUrl || child.foto_url || "/placeholder-child.jpg"}
-                    alt={child.nombre}
-                    width={300}
-                    height={200}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-
-                <div className="flex justify-between items-center mt-1.5 gap-2 w-full">
-                  <p className="text-xs md:text-sm leading-snug flex-1 line-clamp-3 pr-2">
-                    {child.descripcion || "Sin descripción"}
-                  </p>
-                  <button 
-                    onClick={() => handleViewMore(child.id_nino || child.id)}
-                    className="text-xs md:text-sm px-4 py-1 border border-[#251264] rounded-full hover:bg-[#251264] hover:text-white transition"
-                  >
-                    Ver más
-                  </button>
-                </div>
-              </article>
+                child={child}
+                showActions={false}
+              />
             ))}
           </div>
         )}

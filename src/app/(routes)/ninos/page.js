@@ -4,13 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@components/common/Button";
 import ChildCard from "@components/children/ChildCard";
+import { AddIcon } from "@components/common/icons";
 import childrenService from "@/app/lib/services/children.service";
-
-const AddIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-  </svg>
-);
 
 export default function ChildrenListPage() {
   const router = useRouter();

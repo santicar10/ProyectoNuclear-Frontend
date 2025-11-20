@@ -5,39 +5,11 @@ import Modal from "@components/common/Modal";
 import Input from "@components/common/inputs/Input";
 import Button from "@components/common/Button";
 import authService from "@/app/lib/services/auth.service";
-import { validateEmail } from "@/app/lib/validations/forgotPasswordValidations";
+import { MailIcon, CheckCircleIcon } from "@components/common/icons";
+import { validateEmail } from "@/app/lib/validations/common";
 
-const MailIcon = () => (
-  <svg className="w-16 h-16 text-yellow-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-  </svg>
-);
-
-const CheckCircleIcon = () => (
-  <svg className="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-/**
- * Modal para recuperación de contraseña con flujo completo de 4 pasos
- * 
- * Flujo:
- * 1. Usuario ingresa email → Backend envía código al correo
- * 2. Usuario ingresa código recibido → Backend verifica
- * 3. Usuario ingresa nueva contraseña → Backend actualiza
- * 4. Confirmación de éxito
- * 
- * Endpoints usados:
- * - POST /api/usuarios/recuperar (enviar código)
- * - POST /api/usuarios/verificar-codigo (verificar código)
- * - POST /api/usuarios/cambiar (nueva contraseña)
- * - POST /api/usuarios/reenviar-codigo (reenviar código)
- * 
- * @component
- */
 export default function ForgotPasswordModal({ isOpen, onClose }) {
-  const [step, setStep] = useState(1); // 1: email, 2: código, 3: nueva contraseña, 4: éxito
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -47,7 +19,6 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Resetear estado al cerrar
   const handleClose = () => {
     setStep(1);
     setEmail("");
@@ -61,7 +32,6 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
     onClose();
   };
 
-  // PASO 1: Enviar email de recuperación
   const handleSendEmail = async (e) => {
     e.preventDefault();
     
@@ -75,21 +45,16 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
     setErrors({});
 
     try {
-      // Llamada al backend para enviar código
       const result = await authService.recoverPassword(email);
       
       if (result.success) {
-        // Éxito: código enviado al email
-        console.log("Código enviado a:", email);
-        setStep(2); // Pasar al siguiente paso
+        setStep(2);
       } else {
-        // Error del servidor
         setErrors({ 
           submit: result.error || "Error al enviar el correo. Intenta nuevamente." 
         });
       }
     } catch (error) {
-      console.error("Error:", error);
       setErrors({ 
         submit: "Error inesperado. Por favor intenta nuevamente." 
       });
@@ -98,7 +63,6 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
     }
   };
 
-  // PASO 2: Verificar código
   const handleVerifyCode = async (e) => {
     e.preventDefault();
 
@@ -111,21 +75,16 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
     setErrors({});
 
     try {
-      // Llamada al backend para verificar código
       const result = await authService.verifyRecoveryCode(email, verificationCode);
       
       if (result.success) {
-        // Código válido
-        console.log("Código verificado correctamente");
-        setStep(3); // Pasar al siguiente paso
+        setStep(3);
       } else {
-        // Código inválido
         setErrors({ 
           submit: result.error || "Código inválido. Verifica e intenta nuevamente." 
         });
       }
     } catch (error) {
-      console.error("Error:", error);
       setErrors({ 
         submit: "Error al verificar el código. Intenta nuevamente." 
       });
@@ -134,7 +93,6 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
     }
   };
 
-  // PASO 3: Establecer nueva contraseña
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
@@ -159,21 +117,16 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
     setErrors({});
 
     try {
-      // Llamada al backend para restablecer contraseña
       const result = await authService.resetPassword(email, verificationCode, newPassword);
       
       if (result.success) {
-        // Contraseña actualizada
-        console.log("Contraseña restablecida exitosamente");
-        setStep(4); // Pasar a confirmación
+        setStep(4);
       } else {
-        // Error al actualizar
         setErrors({ 
           submit: result.error || "Error al restablecer la contraseña. Intenta nuevamente." 
         });
       }
     } catch (error) {
-      console.error("Error:", error);
       setErrors({ 
         submit: "Error inesperado. Por favor intenta nuevamente." 
       });
@@ -182,7 +135,6 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
     }
   };
 
-  // Reenviar código
   const handleResendCode = async () => {
     setIsLoading(true);
     setErrors({});
@@ -198,7 +150,6 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
         });
       }
     } catch (error) {
-      console.error("Error:", error);
       setErrors({ 
         submit: "Error al reenviar el código." 
       });
@@ -207,7 +158,6 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
     }
   };
 
-  // Renderizar contenido según el paso
   const renderContent = () => {
     switch (step) {
       case 1:
