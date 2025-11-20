@@ -29,6 +29,7 @@ export default function VoluntariadoPage() {
                 </section>
 
       <div className="w-full max-w-4xl px-6 py-10">
+        
         <VoluntariadoForm />
       </div>
     </main>
