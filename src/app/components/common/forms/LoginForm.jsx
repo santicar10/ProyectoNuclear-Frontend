@@ -5,105 +5,61 @@ import { useRouter } from "next/navigation";
 import Input from "@components/common/inputs/Input";
 import Button from "@components/common/Button";
 import ForgotPasswordModal from "@components/common/ForgotPasswordModal";
-import authService from "@/app/lib/services/auth.service";
-import { 
-  validateLoginForm, 
-  hasErrors, 
-  validateEmail, 
-  validatePassword 
-} from "@/app/lib/validations/loginValidations";
+import { ArrowRightIcon } from "@components/common/Icons";
 
-const ArrowIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-  </svg>
-);
+// Hooks con inyección de dependencias
+import { useForm } from "@/app/lib/hooks/useForm";
+
+// Servicios (pueden ser inyectados)
+import { loginService } from "@/app/lib/services/auth";
+
+// Validaciones
+import { validateLoginForm } from "@/app/lib/validations";
+
+// Estilos
+import { INPUT_STYLES, LABEL_STYLES, BUTTON_STYLES } from "@/app/lib/constants/styles";
 
 /**
- * Formulario de inicio de sesión con validación en tiempo real
+ * LoginForm refactorizado siguiendo SOLID
  * 
- * @component
- * @example
- * <LoginForm />
+ * Principios aplicados:
+ * - SRP: El componente solo renderiza UI, la lógica está en hooks
+ * - OCP: Fácil de extender cambiando el servicio o validador
+ * - DIP: Depende de abstracciones (hooks, servicios inyectables)
  */
-export default function LoginForm() {
+export default function LoginForm({ 
+  // Inyección de dependencias para testing
+  authService = loginService,
+  validator = validateLoginForm,
+}) {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-
-    // Limpia el error del campo al modificarlo
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    let error = null;
-
-    if (name === "email") {
-      error = validateEmail(value);
-    } else if (name === "password") {
-      error = validatePassword(value);
-    }
-
-    if (error) {
-      setErrors(prev => ({ ...prev, [name]: error }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    const formErrors = validateLoginForm(formData);
-    
-    if (hasErrors(formErrors)) {
-      setErrors(formErrors);
-      return;
-    }
-
-    setIsLoading(true);
-    setErrors({});
-    
-    try {
-      // Llamada real al backend
+  // Hook de formulario con validador y servicio inyectados
+  const {
+    values,
+    errors,
+    isSubmitting,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setError,
+  } = useForm({
+    initialValues: { email: '', password: '' },
+    validate: validator,
+    onSubmit: async (formData) => {
       const result = await authService.login(formData.email, formData.password);
-
+      
       if (result.success) {
-        // Login exitoso
-        console.log("Login exitoso:", result.data);
-        
-        // Redirigir al dashboard o página principal
-        // Ajusta la ruta según tu aplicación
         router.push('/');
-        
-        // O mostrar mensaje de éxito
-        // alert("¡Bienvenido de vuelta!");
+        return result;
       } else {
-        // Error en el login
-        setErrors({ 
-          submit: result.error || "Error al iniciar sesión. Verifica tus credenciales." 
-        });
+        setError('submit', result.error || 'Error al iniciar sesión');
+        return result;
       }
-    } catch (error) {
-      console.error("Error inesperado:", error);
-      setErrors({ 
-        submit: "Error inesperado. Por favor intenta nuevamente." 
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
   return (
     <>
@@ -113,19 +69,17 @@ export default function LoginForm() {
           type="email"
           name="email"
           placeholder="Login@example.com"
-          value={formData.email}
+          value={values.email}
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.email}
-          labelClassName="text-gray-800"
-          inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+          labelClassName={LABEL_STYLES.dark}
+          inputClassName={`${INPUT_STYLES.yellow} text-gray-800 placeholder-gray-500`}
         />
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-800">
-              Contraseña
-            </label>
+            <label className="block text-sm font-medium text-gray-800">Contraseña</label>
             <button
               type="button"
               onClick={() => setIsForgotPasswordOpen(true)}
@@ -137,14 +91,14 @@ export default function LoginForm() {
           <Input
             name="password"
             placeholder="••••••••••••••"
-            value={formData.password}
+            value={values.password}
             onChange={handleChange}
             onBlur={handleBlur}
             error={errors.password}
             showPasswordToggle={true}
             showPassword={showPassword}
             onTogglePassword={() => setShowPassword(!showPassword)}
-            inputClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400 text-gray-800 placeholder-gray-500"
+            inputClassName={`${INPUT_STYLES.yellow} text-gray-800 placeholder-gray-500`}
           />
         </div>
 
@@ -157,11 +111,11 @@ export default function LoginForm() {
         <div className="flex justify-center">
           <Button 
             type="submit" 
-            isLoading={isLoading}
+            isLoading={isSubmitting}
             variant="warning"
-            icon={ArrowIcon}
+            icon={ArrowRightIcon}
             iconPosition="right"
-            className="rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl shadow-md hover:shadow-lg font-bold px-12"
+            className={`${BUTTON_STYLES.roundedCustom} shadow-md hover:shadow-lg font-bold px-12`}
           >
             INICIA SESIÓN
           </Button>
@@ -177,7 +131,6 @@ export default function LoginForm() {
         </div>
       </form>
 
-      {/* Modal de recuperación de contraseña */}
       <ForgotPasswordModal
         isOpen={isForgotPasswordOpen}
         onClose={() => setIsForgotPasswordOpen(false)}

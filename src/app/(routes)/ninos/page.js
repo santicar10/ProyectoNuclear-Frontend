@@ -1,42 +1,52 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@components/common/Button";
 import ChildCard from "@components/children/ChildCard";
+import LoadingState from "@components/common/LoadingState";
+import ErrorState from "@components/common/ErrorState";
+import { AddIcon } from "@components/common/Icons";
+
+// Hooks con inyección de dependencias
+import { useService } from "@/app/lib/hooks/useService";
+
+// Servicio (puede ser inyectado para testing)
 import childrenService from "@/app/lib/services/children.service";
 
-const AddIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-  </svg>
-);
-
-export default function ChildrenListPage() {
+/**
+ * Página de listado de niños refactorizada siguiendo SOLID
+ * 
+ * Principios aplicados:
+ * - SRP: Componente solo renderiza, lógica en hooks
+ * - OCP: Fácil de extender cambiando el servicio
+ * - DIP: Depende de abstracciones (useService, childrenService)
+ */
+export default function ChildrenListPage({ 
+  // Inyección de dependencia para testing
+  service = childrenService 
+}) {
   const router = useRouter();
-  const [children, setChildren] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  
+  // Hook genérico de servicio CRUD
+  const {
+    data: children,
+    isLoading,
+    error,
+    loadAll,
+    remove,
+    setData,
+  } = useService(service);
 
   useEffect(() => {
-    loadChildren();
-  }, []);
+    loadAll();
+  }, [loadAll]);
 
-  const loadChildren = async () => {
-    setIsLoading(true);
-    const result = await childrenService.getAll();
-    
-    if (result.success) {
-      setChildren(result.data);
-    } else {
-      setError(result.error);
+  const handleDelete = async (id) => {
+    const result = await remove(id);
+    if (!result.success) {
+      alert(result.error);
     }
-    
-    setIsLoading(false);
-  };
-
-  const handleDelete = (id) => {
-    setChildren(children.filter(child => child.id !== id));
   };
 
   const handleCreate = () => {
@@ -44,24 +54,11 @@ export default function ChildrenListPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-24">
-        <div className="text-gray-600 text-2xl">Cargando...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-24">
-        <div className="bg-white rounded-2xl p-8 max-w-md shadow-xl">
-          <p className="text-red-600 text-center">{error}</p>
-          <Button onClick={loadChildren} variant="warning" fullWidth className="mt-4 rounded-lg">
-            Reintentar
-          </Button>
-        </div>
-      </div>
-    );
+    return <ErrorState message={error} onRetry={loadAll} />;
   }
 
   return (
@@ -82,30 +79,47 @@ export default function ChildrenListPage() {
           </Button>
         </div>
 
-        {children.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center shadow-2xl">
-            <p className="text-gray-600 text-lg mb-4">No hay niños registrados</p>
-            <Button
-              onClick={handleCreate}
-              variant="warning"
-              className="rounded-full"
-            >
-              Registrar primer niño
-            </Button>
-          </div>
+        {!children || children.length === 0 ? (
+          <EmptyState onCreateClick={handleCreate} />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {children.map((child) => (
-              <ChildCard
-                key={child.id_nino || child.id}
-                child={child}
-                onDelete={handleDelete}
-                showActions={true}
-              />
-            ))}
-          </div>
+          <ChildrenGrid 
+            children={children} 
+            onDelete={handleDelete} 
+          />
         )}
       </div>
+    </div>
+  );
+}
+
+// Componentes internos siguiendo SRP
+
+function EmptyState({ onCreateClick }) {
+  return (
+    <div className="bg-white rounded-3xl p-12 text-center shadow-2xl">
+      <p className="text-gray-600 text-lg mb-4">No hay niños registrados</p>
+      <Button
+        onClick={onCreateClick}
+        variant="warning"
+        className="rounded-full"
+      >
+        Registrar primer niño
+      </Button>
+    </div>
+  );
+}
+
+function ChildrenGrid({ children, onDelete }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {children.map((child) => (
+        <ChildCard
+          key={child.id_nino || child.id}
+          child={child}
+          onDelete={onDelete}
+          showActions={true}
+        />
+      ))}
     </div>
   );
 }
