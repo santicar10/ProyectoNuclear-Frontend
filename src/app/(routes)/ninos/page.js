@@ -9,7 +9,7 @@ import ErrorState from "@components/common/ErrorState";
 import { AddIcon } from "@components/common/Icons";
 
 // Hooks con inyección de dependencias
-import { useService } from "@/app/hooks/useService";
+import { useService } from "@/app/lib/hooks/useService";
 
 // Servicio (puede ser inyectado para testing)
 import childrenService from "@/app/lib/services/children.service";

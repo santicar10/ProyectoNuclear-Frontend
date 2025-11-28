@@ -1,8 +1,8 @@
 /**
- * Re-exportar hooks desde lib/hooks para compatibilidad
- * Los hooks reales están en src/app/lib/hooks/
+ * Hooks - Re-exports desde lib/hooks
+ * Mantiene compatibilidad con imports existentes
  */
 
-export { useAuth, default as useAuthDefault } from '@/app/lib/hooks/useAuth';
-export { useForm, default as useFormDefault } from '@/app/lib/hooks/useForm';
-export { useService, default as useServiceDefault } from '@/app/lib/hooks/useService';
+export { useAuth } from '@/app/lib/hooks/useAuth';
+export { useForm } from '@/app/lib/hooks/useForm';
+export { useService } from '@/app/lib/hooks/useService';

@@ -8,7 +8,7 @@ import ForgotPasswordModal from "@components/common/ForgotPasswordModal";
 import { ArrowRightIcon } from "@components/common/Icons";
 
 // Hooks con inyección de dependencias
-import { useForm } from "@/app/hooks/useForm";
+import { useForm } from "@/app/lib/hooks/useForm";
 
 // Servicios (pueden ser inyectados)
 import { loginService } from "@/app/lib/services/auth";
