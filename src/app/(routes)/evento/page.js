@@ -9,7 +9,7 @@ const childrenData = [
     name: "Taller de pintura",
     age: "10/12/25",
     gender: "14/01/26",
-    image: "/children/santiago.jpg",
+    image: "/pintura.jpg",
     dream: "En nuestra comunidad encontraras clases de pintura abiertas al publico",
   },
   {
@@ -17,7 +17,7 @@ const childrenData = [
     name: "Curso de costura",
     age: "10/12/25",
     gender: "14/01/26",
-    image: "/children/jairo.jpg",
+    image: "/costura.jpg",
     dream: "Aprende a realizar tejidos de manera profesional con nuestro personal",
   },
   {
@@ -25,7 +25,7 @@ const childrenData = [
     name: "Curso de musica",
     age: "10/12/25",
     gender: "14/01/26",
-    image: "/children/yanfri.jpg",
+    image: "/musica.jpg",
     dream: "Aprende a tocar cualquier tipo de instrumento profesional",
   },
   {
@@ -33,7 +33,7 @@ const childrenData = [
     name: "Curso de ingles",
     age: "10/12/25",
     gender: "14/01/26",
-    image: "/children/socorro.jpg",
+    image: "/ingles.jpg",
     dream: "En nuestra comunidad encontraras clases de inglés abiertas al publico",
   },
 ];
