@@ -6,8 +6,8 @@
  * - DIP: Depende de abstracciones (apiClient, userSessionService)
  */
 
-import apiClient from './http/apiClient';
-import userSessionService from './userSession.service';
+import apiClient from '../http/apiClient';
+import userSessionService from '../userSession.service';
 
 const ENDPOINTS = {
   LOGIN: '/auth/login',

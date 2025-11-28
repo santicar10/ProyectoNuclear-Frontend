@@ -6,7 +6,7 @@
  * - LSP: Las clases hijas pueden sustituir a esta base
  */
 
-import apiClient from './http/apiClient';
+import apiClient from '../http/apiClient';
 
 /**
  * Clase base abstracta para servicios CRUD
@@ -153,44 +153,26 @@ class BaseCrudService {
 
   // ============ MÉTODOS PARA OVERRIDE (Hooks de extensión) ============
 
-  /**
-   * Valida un ID - puede ser sobreescrito
-   */
   validateId(id) {
     return id && id !== 'undefined' && id !== 'null';
   }
 
-  /**
-   * Transforma una lista de items - puede ser sobreescrito
-   */
   transformList(data) {
     return data;
   }
 
-  /**
-   * Transforma un item individual - puede ser sobreescrito
-   */
   transformItem(data) {
     return data;
   }
 
-  /**
-   * Prepara el payload para crear - puede ser sobreescrito
-   */
   prepareCreatePayload(data) {
     return data;
   }
 
-  /**
-   * Prepara el payload para actualizar - puede ser sobreescrito
-   */
   prepareUpdatePayload(data) {
     return data;
   }
 
-  /**
-   * Mensajes de éxito - pueden ser sobreescritos
-   */
   getCreateSuccessMessage() {
     return 'Recurso creado exitosamente';
   }
