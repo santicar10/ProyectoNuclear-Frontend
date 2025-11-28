@@ -1,37 +1,51 @@
-// src/app/lib/config/api.config.js
 /**
  * Configuración de la API
- * Sistema basado en SESIONES HTTP (sin tokens JWT)
+ * Principio: SRP - Solo contiene configuración
  */
 
-// URL base del backend
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+export const API_CONFIG = {
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
+  TIMEOUT: 30000,
+  CREDENTIALS: 'include',
+};
 
-// Endpoints de la API
 export const API_ENDPOINTS = {
   // Autenticación
-  LOGIN: '/auth/login',
-  LOGOUT: '/api/usuarios/logout',
+  AUTH: {
+    LOGIN: '/auth/login',
+    LOGOUT: '/api/usuarios/logout',
+    REGISTER: '/api/usuarios/registro',
+    PROFILE: '/api/usuarios/perfil',
+  },
   
-  // Usuarios
-  REGISTER: '/api/usuarios/registro',
-  PROFILE: '/api/usuarios/perfil',
-  RECOVER_PASSWORD: '/api/usuarios/recuperar',
-  CHANGE_PASSWORD: '/api/usuarios/cambiar',
-  VERIFY_CODE: '/api/usuarios/verificar-codigo',
-  RESET_PASSWORD: '/api/usuarios/restablecer-password',
-  RESEND_CODE: '/api/usuarios/reenviar-codigo',
-
+  // Recuperación de contraseña
+  PASSWORD: {
+    RECOVER: '/api/usuarios/recuperar',
+    VERIFY_CODE: '/api/usuarios/verificar-codigo',
+    CHANGE: '/api/usuarios/cambiar',
+    RESEND_CODE: '/api/usuarios/reenviar-codigo',
+  },
+  
   // Niños
-  CHILDREN: '/api/ninos',
-  CHILDREN_BY_ID: (id) => `/api/ninos/${id}`,
-  CHILDREN_AVAILABLE: '/api/ninos/disponibles',
+  CHILDREN: {
+    BASE: '/api/ninos',
+    PUBLIC: '/api/ninos/publico',
+    AVAILABLE: '/api/ninos/disponibles',
+    BY_ID: (id) => `/api/ninos/${id}`,
+    PUBLIC_BY_ID: (id) => `/api/ninos/publico/${id}`,
+  },
+  
+  // Eventos
+  EVENTS: {
+    BASE: '/api/eventos',
+    BY_ID: (id) => `/api/eventos/${id}`,
+    UPCOMING: '/api/eventos/proximos',
+  },
+  
+  // Donaciones
+  DONATIONS: {
+    CREATE_PREFERENCE: '/api/donaciones/create_preference',
+  },
 };
 
-// Configuración de headers por defecto
-export const DEFAULT_HEADERS = {
-  'Content-Type': 'application/json',
-};
-
-// Clave para almacenar datos del usuario en localStorage
-export const USER_STORAGE_KEY = 'user_data';
+export default API_CONFIG;

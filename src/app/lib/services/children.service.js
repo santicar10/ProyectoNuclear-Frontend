@@ -1,144 +1,29 @@
-import httpService from './http.service';
-import { API_ENDPOINTS } from '@/app/lib/config/api.config';
-
-class ChildrenService {
-  /**
-   * Calcula la edad basándose en la fecha de nacimiento
-   */
-  calculateAge(birthDate) {
-    if (!birthDate) return 0;
-    
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    
-    return age;
-  }
-
-  /**
-   * Obtiene todos los niños
-   * GET /api/ninos
-   */
-  async getAll() {
-    try {
-      const response = await httpService.get(API_ENDPOINTS.CHILDREN);
-      return {
-        success: true,
-        data: response,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-  }
-
 /**
- * Obtiene un niño por ID (endpoint público)
- * GET /api/ninos/publico/{id}
+ * Servicio de Niños
+ * Principios:
+ * - OCP: Extiende BaseCrudService sin modificarlo
+ * - LSP: Puede sustituir a BaseCrudService
+ * - SRP: Solo maneja operaciones de niños
  */
-async getById(id) {
-  if (!id || id === 'undefined' || id === 'null') {
-    return {
-      success: false,
-      error: 'ID de niño inválido',
-    };
-  }
 
-  try {
-    const response = await httpService.get(`/api/ninos/publico/${id}`);
-    return {
-      success: true,
-      data: response,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message,
-    };
-  }
-}
+import BaseCrudService from './base/BaseCrudService';
+import { calculateAge } from '../utils/dateUtils';
 
-  /**
-   * Crea un nuevo niño
-   * POST /api/ninos
-   */
-  async create(childData) {
-    try {
-      const response = await httpService.post(API_ENDPOINTS.CHILDREN, {
-        nombre: childData.nombre,
-        fechaNacimiento: childData.fechaNacimiento, 
-        genero: childData.genero,
-        descripcion: childData.descripcion,
-        fotoUrl: childData.fotoUrl || null,
-        estadoApadrinamiento: 'Disponible',
-      });
+const ENDPOINTS = {
+  CHILDREN: '/api/ninos',
+  CHILDREN_PUBLIC: '/api/ninos/publico',
+};
 
-      return {
-        success: true,
-        data: response,
-        message: 'Niño registrado exitosamente',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
+class ChildrenService extends BaseCrudService {
+  constructor() {
+    super(ENDPOINTS.CHILDREN);
   }
 
   /**
-   * Actualiza un niño existente (actualización parcial)
-   * PATCH /api/ninos/{id}
+   * Override: Obtiene un niño por ID usando endpoint público
    */
-  async update(id, childData) {
-    try {
-      const updateData = {};
-      
-      if (childData.nombre) updateData.nombre = childData.nombre;
-      
-      if (childData.fechaNacimiento) {
-        updateData.fecha_nacimiento = childData.fechaNacimiento;
-      }
-      
-      if (childData.genero) updateData.genero = childData.genero;
-      if (childData.descripcion) updateData.descripcion = childData.descripcion;
-      if (childData.fotoUrl !== undefined) updateData.foto_url = childData.fotoUrl;
-      if (childData.estadoApadrinamiento) {
-        updateData.estado_apadrinamiento = childData.estadoApadrinamiento;
-      }
-
-      const response = await httpService.patch(
-        API_ENDPOINTS.CHILDREN_BY_ID(id),
-        updateData
-      );
-
-      return {
-        success: true,
-        data: response,
-        message: 'Niño actualizado exitosamente',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-  }
-  
-
-    /**
-   * Elimina un niño
-   * DELETE /api/ninos/{id}
-   */
-  async delete(id) {
-    if (!id || id === 'undefined' || id === 'null') {
+  async getById(id) {
+    if (!this.validateId(id)) {
       return {
         success: false,
         error: 'ID de niño inválido',
@@ -146,10 +31,10 @@ async getById(id) {
     }
 
     try {
-      await httpService.delete(API_ENDPOINTS.CHILDREN_BY_ID(id));
+      const response = await this.httpClient.get(`${ENDPOINTS.CHILDREN_PUBLIC}/${id}`);
       return {
         success: true,
-        message: 'Niño eliminado exitosamente',
+        data: this.transformItem(response),
       };
     } catch (error) {
       return {
@@ -158,6 +43,100 @@ async getById(id) {
       };
     }
   }
+
+  /**
+   * Override: Transforma item añadiendo edad calculada
+   */
+  transformItem(child) {
+    if (!child) return child;
+    
+    return {
+      ...child,
+      edad: calculateAge(child.fechaNacimiento || child.fecha_nacimiento),
+    };
+  }
+
+  /**
+   * Override: Transforma lista de niños
+   */
+  transformList(children) {
+    if (!Array.isArray(children)) return [];
+    return children.map(child => this.transformItem(child));
+  }
+
+  /**
+   * Override: Prepara payload para crear
+   */
+  prepareCreatePayload(data) {
+    return {
+      nombre: data.nombre,
+      fechaNacimiento: data.fechaNacimiento,
+      genero: data.genero,
+      descripcion: data.descripcion,
+      fotoUrl: data.fotoUrl || null,
+      estadoApadrinamiento: 'Disponible',
+    };
+  }
+
+  /**
+   * Override: Prepara payload para actualizar
+   */
+  prepareUpdatePayload(data) {
+    const payload = {};
+    
+    if (data.nombre) payload.nombre = data.nombre;
+    if (data.fechaNacimiento) payload.fecha_nacimiento = data.fechaNacimiento;
+    if (data.genero) payload.genero = data.genero;
+    if (data.descripcion) payload.descripcion = data.descripcion;
+    if (data.fotoUrl !== undefined) payload.foto_url = data.fotoUrl;
+    if (data.estadoApadrinamiento) payload.estado_apadrinamiento = data.estadoApadrinamiento;
+
+    return payload;
+  }
+
+  /**
+   * Override: Mensajes de éxito específicos
+   */
+  getCreateSuccessMessage() {
+    return 'Niño registrado exitosamente';
+  }
+
+  getUpdateSuccessMessage() {
+    return 'Niño actualizado exitosamente';
+  }
+
+  getDeleteSuccessMessage() {
+    return 'Niño eliminado exitosamente';
+  }
+
+  // ============ MÉTODOS ESPECÍFICOS DEL DOMINIO ============
+
+  /**
+   * Obtiene niños disponibles para apadrinamiento
+   */
+  async getAvailable() {
+    try {
+      const response = await this.httpClient.get(`${ENDPOINTS.CHILDREN}/disponibles`);
+      return {
+        success: true,
+        data: this.transformList(response),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  /**
+   * Verifica si un niño está disponible
+   */
+  isAvailable(child) {
+    return child?.estadoApadrinamiento === 'Disponible' || 
+           child?.estado_apadrinamiento === 'Disponible';
+  }
 }
 
-export default new ChildrenService();
+export const childrenService = new ChildrenService();
+export default childrenService;
