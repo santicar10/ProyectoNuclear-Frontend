@@ -1,15 +1,23 @@
+// src/app/(routes)/apadrinamiento/[id]/page.js
 "use client";
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Button from "@components/common/Button";
+import Modal from "@components/common/Modal";
 import childrenService from "@/app/lib/services/children.service";
 import authService from "@/app/lib/services/auth.service";
 
 const ArrowBackIcon = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+  </svg>
+);
+
+const HeartIcon = () => (
+  <svg className="w-16 h-16 text-yellow-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
   </svg>
 );
 
@@ -20,6 +28,7 @@ export default function ChildDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -48,13 +57,24 @@ export default function ChildDetailPage() {
     router.push('/apadrinamiento');
   };
 
-  const handleSponsor = () => {
+  const handleSponsorClick = () => {
     if (!isAuthenticated) {
       alert("Debes iniciar sesión para apadrinar");
       router.push("/login");
       return;
     }
-    alert(`Iniciando proceso de apadrinamiento para ${child.nombre}`);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSponsor = () => {
+    // Aquí irá la lógica para apadrinar al niño
+    setShowConfirmModal(false);
+    alert(`¡Felicidades! Has iniciado el proceso de apadrinamiento para ${child.nombre}`);
+    // TODO: Llamar al endpoint del backend para crear el apadrinamiento
+  };
+
+  const handleCancelSponsor = () => {
+    setShowConfirmModal(false);
   };
 
   if (isLoading) {
@@ -140,9 +160,9 @@ export default function ChildDetailPage() {
                     <div className="flex justify-center">
                       <svg className="w-8 h-8 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
                         {child.genero === 'M' || child.genero === 'masculino' ? (
-                          <path d="M12 2C9.243 2 7 4.243 7 7c0 2.206 1.454 4.07 3.438 4.723L10 13.5v2.25H8.5V18h1.5v2h2v-2h1.5v-2.25H12v-2.25l-.438-1.777C13.546 11.07 15 9.206 15 7c0-2.757-2.243-5-5-5z"/>
-                        ) : (
                           <path d="M12 2c-2.757 0-5 2.243-5 5s2.243 5 5 5 5-2.243 5-5-2.243-5-5-5zm0 8c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3-1.346 3-3 3zm0 2c-3.866 0-7 3.134-7 7v3h2v-3c0-2.757 2.243-5 5-5s5 2.243 5 5v3h2v-3c0-3.866-3.134-7-7-7z"/>
+                        ) : (
+                          <path d="M12 2C9.243 2 7 4.243 7 7c0 2.206 1.454 4.07 3.438 4.723L10 13.5v2.25H8.5V18h1.5v2h2v-2h1.5v-2.25H12v-2.25l-.438-1.777C13.546 11.07 15 9.206 15 7c0-2.757-2.243-5-5-5z"/>
                         )}
                       </svg>
                     </div>
@@ -151,7 +171,7 @@ export default function ChildDetailPage() {
 
                 <div className="flex justify-center">
                   <Button
-                    onClick={handleSponsor}
+                    onClick={handleSponsorClick}
                     variant="warning"
                     className="rounded-full px-8 py-3 font-bold text-base md:text-lg shadow-lg hover:shadow-xl border-2 border-gray-900 transition-all hover:scale-105"
                   >
@@ -163,6 +183,52 @@ export default function ChildDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Confirmación */}
+      <Modal
+        isOpen={showConfirmModal}
+        onClose={handleCancelSponsor}
+        title=""
+        size="md"
+        showCloseButton={false}
+      >
+        <div className="text-center py-6">
+          <HeartIcon />
+          
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">
+            ¿Estás seguro de apadrinar a {child?.nombre}?
+          </h3>
+          
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            Al confirmar, iniciarás un vínculo especial que puede transformar la vida de este niño. 
+            Te mantendremos informado sobre su progreso y desarrollo.
+          </p>
+
+          <div className="bg-yellow-50 rounded-xl p-4 mb-6 border border-yellow-200">
+            <p className="text-sm text-gray-700">
+              <span className="font-semibold">Nota:</span> Un miembro de nuestro equipo se pondrá en contacto contigo 
+              para completar el proceso de apadrinamiento.
+            </p>
+          </div>
+
+          <div className="flex gap-4">
+            <Button
+              onClick={handleCancelSponsor}
+              variant="outline"
+              className="flex-1 rounded-full font-semibold"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmSponsor}
+              variant="warning"
+              className="flex-1 rounded-full font-bold shadow-lg hover:shadow-xl"
+            >
+              Sí, quiero apadrinar
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </main>
   );
 }
