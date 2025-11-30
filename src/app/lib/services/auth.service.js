@@ -18,7 +18,17 @@ import apiClient from './http/apiClient';
  */
 class AuthServiceFacade {
   // ============ SESIÓN ============
-  
+
+  updateUserData(updates) {
+  if (typeof window !== 'undefined') {
+    const currentData = this.getUserData();
+    if (currentData) {
+      const updatedData = { ...currentData, ...updates };
+      localStorage.setItem('userData', JSON.stringify(updatedData));
+    }
+  }
+}
+ 
   getUserData() {
     return userSessionService.get();
   }
@@ -98,6 +108,9 @@ class AuthServiceFacade {
   }
 }
 
+
+
 // Exportar instancia singleton
 const authService = new AuthServiceFacade();
 export default authService;
+

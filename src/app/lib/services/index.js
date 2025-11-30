@@ -1,3 +1,4 @@
+// src/app/lib/services/index.js
 /**
  * Servicios - Exports Centralizados
  * 
@@ -28,3 +29,4 @@ export { default as authService } from './auth.service';
 // Dominio
 export { childrenService, default as ChildrenService } from './children.service';
 export { eventsService, default as EventsService } from './events.service';
+export { bitacoraService, default as BitacoraService } from './bitacora.service';
