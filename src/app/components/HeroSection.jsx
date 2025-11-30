@@ -54,7 +54,7 @@ export default function HeroSection() {
 
               <button
                 className="rounded-full px-6 py-2 font-medium border transition-colors hover:bg-black hover:text-white"
-                style={{ borderColor: "#000", color: "#000" }}
+                style={{ borderColor: "#000", color: "#ffffffff" }}
               >
                 Apadrinamiento
               </button>

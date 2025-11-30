@@ -4,47 +4,55 @@ import { useState } from "react";
 export default function VoluntariadoForm() {
   const [proyecto, setProyecto] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const response = await fetch('/api/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ 
-        tipo: 'voluntariado',
-        proyecto, 
-        descripcion 
-      }),
-    });
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tipo: "voluntariado",
+          proyecto,
+          descripcion,
+          nombre,
+          correo,
+          telefono,
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      alert("✅ Correo enviado correctamente");
-      setProyecto("");
-      setDescripcion("");
-    } else {
-      alert("❌ Error al enviar el correo: " + data.error);
+      if (response.ok) {
+        alert("✅ Correo enviado correctamente");
+        setProyecto("");
+        setDescripcion("");
+        setNombre("");
+        setCorreo("");
+        setTelefono("");
+      } else {
+        alert("❌ Error al enviar el correo: " + data.error);
+      }
+    } catch (error) {
+      alert("❌ Error: " + error.message);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    alert("❌ Error: " + error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <form
       onSubmit={handleSubmit}
       className="flex flex-col gap-6 text-sm font-normal text-[#251264]"
     >
-      {/* Proyecto */}
       <div>
         <label className="block mb-2">Proyectos</label>
         <select
@@ -60,7 +68,6 @@ export default function VoluntariadoForm() {
         </select>
       </div>
 
-      {/* Descripción */}
       <div>
         <label className="block mb-2">Descripción</label>
         <textarea
@@ -72,7 +79,44 @@ export default function VoluntariadoForm() {
         />
       </div>
 
-      {/* Botón enviar */}
+      <div className="grid md:grid-cols-3 gap-4">
+        <div>
+          <label className="block mb-2">Nombre completo</label>
+          <input
+            type="text"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Ej: Ana María López"
+            className="w-full rounded-full px-4 py-3 bg-yellow-200 focus:outline-none"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">Correo electrónico</label>
+          <input
+            type="email"
+            value={correo}
+            onChange={(e) => setCorreo(e.target.value)}
+            placeholder="Ej: ana@example.com"
+            className="w-full rounded-full px-4 py-3 bg-yellow-200 focus:outline-none"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">Teléfono / WhatsApp</label>
+          <input
+            type="tel"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
+            placeholder="Ej: 300 000 0000"
+            className="w-full rounded-full px-4 py-3 bg-yellow-200 focus:outline-none"
+            required
+          />
+        </div>
+      </div>
+
       <div className="flex justify-center">
         <button
           type="submit"

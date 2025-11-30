@@ -5,7 +5,6 @@ import { useRouter, useParams } from "next/navigation";
 import Input from "@components/common/inputs/Input";
 import Textarea from "@components/common/Textarea";
 import Button from "@components/common/Button";
-// ajusta estas rutas según tu estructura
 import eventsService from "@/app/lib/services/events.service";
 import { validateEventForm, hasErrors } from "@/app/lib/validations/eventValidations";
 

@@ -4,6 +4,9 @@ import { useState } from "react";
 export default function DotacionForm() {
   const [dotacion, setDotacion] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -11,15 +14,18 @@ export default function DotacionForm() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
+      const response = await fetch("/api/send-email", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          tipo: 'dotacion',
-          dotacion, 
-          descripcion 
+        body: JSON.stringify({
+          tipo: "dotacion",
+          dotacion,
+          descripcion,
+          nombre,
+          correo,
+          telefono,
         }),
       });
 
@@ -29,6 +35,9 @@ export default function DotacionForm() {
         alert("✅ Correo enviado correctamente");
         setDotacion("");
         setDescripcion("");
+        setNombre("");
+        setCorreo("");
+        setTelefono("");
       } else {
         alert("❌ Error al enviar el correo: " + data.error);
       }
@@ -44,7 +53,6 @@ export default function DotacionForm() {
       onSubmit={handleSubmit}
       className="flex flex-col gap-6 text-sm font-normal text-[#251264]"
     >
-      {/* Dotación */}
       <div>
         <label className="block mb-2">Proyectos</label>
         <select
@@ -53,14 +61,13 @@ export default function DotacionForm() {
           className="w-full rounded-full px-4 py-3 bg-yellow-200 focus:outline-none"
           required
         >
-          <option value="">Elija que dotación nos puedes dar</option>
+          <option value="">Elija qué dotación nos puedes dar</option>
           <option value="Medicamentos">Medicamentos</option>
           <option value="Ropa">Ropa</option>
           <option value="Comida">Comida</option>
         </select>
       </div>
 
-      {/* Descripción */}
       <div>
         <label className="block mb-2">Descripción</label>
         <textarea
@@ -72,7 +79,44 @@ export default function DotacionForm() {
         />
       </div>
 
-      {/* Botón enviar */}
+      <div className="grid md:grid-cols-3 gap-4">
+        <div>
+          <label className="block mb-2">Nombre completo</label>
+          <input
+            type="text"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Ej: Carlos Pérez"
+            className="w-full rounded-full px-4 py-3 bg-yellow-200 focus:outline-none"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">Correo electrónico</label>
+          <input
+            type="email"
+            value={correo}
+            onChange={(e) => setCorreo(e.target.value)}
+            placeholder="Ej: carlos@example.com"
+            className="w-full rounded-full px-4 py-3 bg-yellow-200 focus:outline-none"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">Teléfono / WhatsApp</label>
+          <input
+            type="tel"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
+            placeholder="Ej: 310 000 0000"
+            className="w-full rounded-full px-4 py-3 bg-yellow-200 focus:outline-none"
+            required
+          />
+        </div>
+      </div>
+
       <div className="flex justify-center">
         <button
           type="submit"
