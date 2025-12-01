@@ -1,11 +1,4 @@
-/**
- * Servicio de Niños
- * Principios:
- * - OCP: Extiende BaseCrudService sin modificarlo
- * - LSP: Puede sustituir a BaseCrudService
- * - SRP: Solo maneja operaciones de niños
- */
-
+// src/app/lib/services/children.service.js
 import BaseCrudService from './base/BaseCrudService';
 import { calculateAge } from '../utils/dateUtils';
 
@@ -20,8 +13,24 @@ class ChildrenService extends BaseCrudService {
   }
 
   /**
-   * Override: Obtiene un niño por ID usando endpoint público
+   * Override: Obtiene todos los niños - usa el endpoint administrativo
+   * que ahora también acepta padrinos
    */
+  async getAll() {
+    try {
+      const response = await this.httpClient.get(ENDPOINTS.CHILDREN);
+      return {
+        success: true,
+        data: this.transformList(response),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
   async getById(id) {
     if (!this.validateId(id)) {
       return {
@@ -44,9 +53,6 @@ class ChildrenService extends BaseCrudService {
     }
   }
 
-  /**
-   * Override: Transforma item añadiendo edad calculada
-   */
   transformItem(child) {
     if (!child) return child;
     
@@ -56,17 +62,11 @@ class ChildrenService extends BaseCrudService {
     };
   }
 
-  /**
-   * Override: Transforma lista de niños
-   */
   transformList(children) {
     if (!Array.isArray(children)) return [];
     return children.map(child => this.transformItem(child));
   }
 
-  /**
-   * Override: Prepara payload para crear
-   */
   prepareCreatePayload(data) {
     return {
       nombre: data.nombre,
@@ -78,9 +78,6 @@ class ChildrenService extends BaseCrudService {
     };
   }
 
-  /**
-   * Override: Prepara payload para actualizar
-   */
   prepareUpdatePayload(data) {
     const payload = {};
     
@@ -94,9 +91,6 @@ class ChildrenService extends BaseCrudService {
     return payload;
   }
 
-  /**
-   * Override: Mensajes de éxito específicos
-   */
   getCreateSuccessMessage() {
     return 'Niño registrado exitosamente';
   }
@@ -109,14 +103,9 @@ class ChildrenService extends BaseCrudService {
     return 'Niño eliminado exitosamente';
   }
 
-  // ============ MÉTODOS ESPECÍFICOS DEL DOMINIO ============
-
-  /**
-   * Obtiene niños disponibles para apadrinamiento
-   */
   async getAvailable() {
     try {
-      const response = await this.httpClient.get(`${ENDPOINTS.CHILDREN}/disponibles`);
+      const response = await this.httpClient.get(`${ENDPOINTS.CHILDREN}`);
       return {
         success: true,
         data: this.transformList(response),
@@ -129,9 +118,6 @@ class ChildrenService extends BaseCrudService {
     }
   }
 
-  /**
-   * Verifica si un niño está disponible
-   */
   isAvailable(child) {
     return child?.estadoApadrinamiento === 'Disponible' || 
            child?.estado_apadrinamiento === 'Disponible';

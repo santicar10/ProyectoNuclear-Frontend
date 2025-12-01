@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import childrenService from "@/app/lib/services/children.service";
+import { getDirectImageUrl } from "@/app/lib/utils/imageUtils";
 import authService from "@/app/lib/services/auth.service";
 
 export default function ApadrinamientoPage() {
@@ -249,11 +250,11 @@ export default function ApadrinamientoPage() {
 
                 <div className="overflow-hidden rounded-[24px] mb-3 h-[200px]">
                   <Image
-                    src={child.fotoUrl || child.foto_url || "/placeholder-child.jpg"}
-                    alt={child.nombre}
+                    src={getDirectImageUrl(child.fotoUrl || child.foto_url) || "/placeholder-child.jpg"}
+                    alt={child.nombre || "Niño"}
                     width={300}
-                    height={200}
-                    className="h-full w-full object-cover"
+                    height={300}
+                    className="w-full h-full object-cover"
                   />
                 </div>
 
@@ -263,9 +264,9 @@ export default function ApadrinamientoPage() {
                   </p>
                   <button 
                     onClick={() => handleViewMore(child.id_nino || child.id)}
-                    className="text-xs md:text-sm px-4 py-1 border border-[#251264] rounded-full hover:bg-[#251264] hover:text-white transition"
+                    className="text-[10px] px-3 py-1 border border-[#251264] text-[#251264] rounded-tl-[20px] rounded-tr-lg rounded-bl-lg rounded-br-[20px] hover:bg-[#251264] hover:text-white transition whitespace-nowrap"
                   >
-                    Ver más
+                    Ver mas
                   </button>
                 </div>
               </article>
