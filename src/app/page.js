@@ -1,15 +1,9 @@
-<<<<<<< HEAD
 import HeroSection from "@components/HeroSection";
 import HomeCarousel from "./components/home/HomeCarousel";
-=======
-import HeroSection from "./components/HeroSection";
-
->>>>>>> samu
 
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col">
-<<<<<<< HEAD
 
       {/* Hero principal */}
       <HeroSection />
@@ -18,12 +12,6 @@ export default function Home() {
       <HomeCarousel />
 
       {/* Sección misión */}
-=======
-      {/* Sección principal */}
-      <HeroSection />
-
-
->>>>>>> samu
       <section className="py-20 text-center bg-white text-gray-700">
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="text-3xl font-bold mb-4">Nuestra misión</h2>
@@ -35,7 +23,6 @@ export default function Home() {
         </div>
       </section>
 
-<<<<<<< HEAD
             {/* Sección vision */}
       <section className="py-20 text-center bg-white text-gray-700">
         <div className="max-w-3xl mx-auto px-6">
@@ -48,8 +35,6 @@ export default function Home() {
         </div>
       </section>
 
-=======
->>>>>>> samu
       {/* Footer */}
       <footer className="bg-[#1A125C] text-white py-6 text-center text-sm">
         <p>© {new Date().getFullYear()} Huahuacuna. Todos los derechos reservados.</p>

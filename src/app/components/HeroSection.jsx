@@ -54,11 +54,7 @@ export default function HeroSection() {
 
               <button
                 className="rounded-full px-6 py-2 font-medium border transition-colors hover:bg-black hover:text-white"
-<<<<<<< HEAD
                 style={{ borderColor: "#000", color: "#ffffffff" }}
-=======
-                style={{ borderColor: "#000", color: "#000" }}
->>>>>>> samu
               >
                 Apadrinamiento
               </button>
@@ -68,11 +64,7 @@ export default function HeroSection() {
           {/* === Imagen principal === */}
           <div className="mt-10 md:mt-0">
             <Image
-<<<<<<< HEAD
               src="/children.svg"  
-=======
-              src="/hero-img.png"  
->>>>>>> samu
               alt="Niña y niño sonrientes"
               width={420}
               height={520}
@@ -85,8 +77,4 @@ export default function HeroSection() {
       </div>
     </section>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> samu

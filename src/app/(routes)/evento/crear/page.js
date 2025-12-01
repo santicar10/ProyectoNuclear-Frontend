@@ -39,7 +39,7 @@ export default function CreateEventPage() {
   };
 
   const handleBack = () => {
-    router.push("/eventos");
+    router.push("/evento");
   };
 
   const handleSubmit = async (e) => {
