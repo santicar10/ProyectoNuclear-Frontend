@@ -7,6 +7,7 @@ import Image from "next/image";
 import Button from "@components/common/Button";
 import Modal from "@components/common/Modal";
 import childrenService from "@/app/lib/services/children.service";
+import { getDirectImageUrl } from "@/app/lib/utils/imageUtils";
 import authService from "@/app/lib/services/auth.service";
 
 const ArrowBackIcon = () => (
@@ -137,10 +138,10 @@ export default function ChildDetailPage() {
               <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-[40px] p-6 md:p-8 shadow-2xl max-w-sm w-full">
                 <div className="bg-gray-300 rounded-[24px] overflow-hidden mb-6 aspect-square">
                   <Image
-                    src={child.fotoUrl || child.foto_url || "/placeholder-child.jpg"}
-                    alt={child.nombre}
-                    width={400}
-                    height={400}
+                    src={getDirectImageUrl(child.fotoUrl || child.foto_url) || "/placeholder-child.jpg"}
+                    alt={child.nombre || "Niño"}
+                    width={300}
+                    height={300}
                     className="w-full h-full object-cover"
                   />
                 </div>

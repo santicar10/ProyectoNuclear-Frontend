@@ -1,9 +1,6 @@
+// src/app/lib/services/auth.service.js
 /**
  * Auth Service Facade
- * Patrón: Facade + Adapter
- * 
- * Mantiene la API original para compatibilidad hacia atrás
- * mientras internamente usa los servicios SOLID separados
  */
 
 import { loginService } from './auth/login.service';
@@ -12,22 +9,19 @@ import { passwordRecoveryService } from './auth/passwordRecovery.service';
 import userSessionService from './userSession.service';
 import apiClient from './http/apiClient';
 
-/**
- * Facade que expone la API original de authService
- * Delega a los servicios especializados internamente
- */
 class AuthServiceFacade {
   // ============ SESIÓN ============
 
   updateUserData(updates) {
-  if (typeof window !== 'undefined') {
-    const currentData = this.getUserData();
-    if (currentData) {
-      const updatedData = { ...currentData, ...updates };
-      localStorage.setItem('userData', JSON.stringify(updatedData));
+    if (typeof window !== 'undefined') {
+      const currentData = this.getUserData();
+      if (currentData) {
+        const updatedData = { ...currentData, ...updates };
+        // CORREGIDO: usar el servicio en lugar de localStorage directo
+        userSessionService.save(updatedData);
+      }
     }
   }
-}
  
   getUserData() {
     return userSessionService.get();
@@ -90,6 +84,8 @@ class AuthServiceFacade {
           id: response.id_usuario,
           nombre: response.nombre,
           correo: response.correo,
+          telefono: response.telefono,
+          direccion: response.direccion,
           rol: response.rol,
         };
         userSessionService.save(userData);
@@ -108,9 +104,5 @@ class AuthServiceFacade {
   }
 }
 
-
-
-// Exportar instancia singleton
 const authService = new AuthServiceFacade();
 export default authService;
-

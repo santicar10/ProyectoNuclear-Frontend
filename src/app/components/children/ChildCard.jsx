@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Button from "@components/common/Button";
 import { useRouter } from "next/navigation";
+import { getDirectImageUrl } from "@/app/lib/utils/imageUtils";
 import childrenService from "@/app/lib/services/children.service";
 
 const EditIcon = () => (
@@ -72,7 +73,7 @@ export default function ChildCard({ child, onDelete, showActions = false }) {
     <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
       <div className="bg-gray-300 rounded-2xl overflow-hidden mb-4 aspect-square">
         <Image
-          src={child.fotoUrl || child.foto_url || "/placeholder-child.jpg"}
+          src={getDirectImageUrl(child.fotoUrl || child.foto_url) || "/placeholder-child.jpg"}
           alt={child.nombre || "Niño"}
           width={300}
           height={300}

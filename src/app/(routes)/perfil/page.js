@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import authService from '@/app/lib/services/auth.service';
 import childrenService from '@/app/lib/services/children.service';
+import { getDirectImageUrl } from "@/app/lib/utils/imageUtils";
 import Modal from '@/app/components/common/Modal';
 import Button from '@/app/components/common/Button';
 
@@ -131,7 +132,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-white">
       {/* Header con gradiente */}
       <div className="relative bg-gradient-to-r from-[#FDB913] via-[#FF8C42] to-[#FF6B9D] h-40 md:h-48">
-        <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-3xl md:text-4xl font-bold">
+        <h1 className="absolute top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-3xl md:text-4xl font-bold">
           Hola, {padrinoData?.name || 'Usuario'}
         </h1>
       </div>
@@ -140,9 +141,9 @@ export default function ProfilePage() {
       <div className="relative px-6 md:px-12 pb-12">
         {/* Avatar superpuesto */}
         <div className="flex justify-start -mt-20 md:-mt-24 mb-8 ml-8">
-          <div className="bg-white rounded-full w-44 h-44 md:w-52 md:h-52 shadow-2xl flex items-center justify-center border-4 border-white">
+          <div className="bg-white rounded-full w-52 h-52 md:w-60 md:h-60 shadow-2xl flex items-center justify-center border-4 border-white">
             <div className="text-[#251264]">
-              <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="12" cy="8" r="5"></circle>
                 <path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"></path>
               </svg>
@@ -153,36 +154,25 @@ export default function ProfilePage() {
         {/* Grid de tarjetas */}
         <div className="grid gap-8 md:gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 justify-items-start">
           {/* Tarjeta del Padrino */}
-          <article className="bg-[#F9DC6B] text-[#251264] rounded-[40px] w-full max-w-[350px] h-[460px] px-6 pt-6 pb-5 shadow-[0_18px_40px_rgba(0,0,0,0.12)] flex flex-col">
-            <h2 className="text-center text-lg font-bold mb-6">PADRINO</h2>
+          <article className="bg-[#F9DC6B] text-[#251264] rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] w-[280px] px-6 py-5 shadow-lg h-fit">
+            <h2 className="text-center text-sm font-bold mb-4 tracking-wide">PADRINO</h2>
             
-            <div className="flex-1 flex flex-col justify-center space-y-4">
-              <div className="text-center">
-                <h3 className="font-bold text-base mb-1">{padrinoData?.name}</h3>
-              </div>
-              
-              <div className="text-center">
-                <p className="text-sm">{padrinoData?.email}</p>
-              </div>
-              
+            <div className="space-y-2 text-center">
+              <p className="font-semibold text-sm">{padrinoData?.name}</p>
+              <p className="text-xs">{padrinoData?.email}</p>
               {padrinoData?.phone && (
-                <div className="text-center">
-                  <p className="text-sm font-semibold">{padrinoData.phone}</p>
-                </div>
+                <p className="text-xs font-semibold">{padrinoData.phone}</p>
               )}
-              
               {padrinoData?.location && (
-                <div className="text-center">
-                  <p className="text-sm">{padrinoData.location}</p>
-                </div>
+                <p className="text-xs">{padrinoData.location}</p>
               )}
             </div>
 
             {/* Botones */}
-            <div className="flex gap-3 mt-4">
+            <div className="flex gap-2 mt-5">
               <button
                 onClick={handleEditClick}
-                className="flex-1 bg-[#251264] text-white text-sm px-6 py-2.5 rounded-full hover:bg-opacity-90 transition font-semibold"
+                className="flex-1 bg-[#251264] text-white text-xs px-4 py-2 rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px] hover:bg-opacity-90 transition font-semibold"
               >
                 Editar
               </button>
@@ -252,19 +242,19 @@ export default function ProfilePage() {
             childrenData.map((child) => (
               <article
                 key={child.id_nino || child.id}
-                className="bg-[#F9DC6B] text-[#251264] rounded-[40px] w-full max-w-[350px] h-[460px] px-6 pt-6 pb-5 shadow-[0_18px_40px_rgba(0,0,0,0.12)] flex flex-col"
+                className="bg-[#F9DC6B] text-[#251264] rounded-tl-[50px] rounded-tr-[20px] rounded-bl-[20px] rounded-br-[50px] w-full max-w-[350px] h-[460px] px-6 pt-6 pb-5 shadow-[0_18px_40px_rgba(0,0,0,0.12)] flex flex-col"
               >
                 <h2 className="text-center text-sm md:text-base font-semibold mb-4">
                   {child.nombre}
                 </h2>
 
                 <div className="flex justify-center gap-4 mb-4">
-                  <div className="bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center">
-                    <div className="font-semibold text-xs">Age</div>
+                  <div className="bg-[#FBE7A1] rounded-tl-[40px] rounded-tr-[10px] rounded-bl-[10px] rounded-br-[40px] w-[60px] py-4 text-center">
+                    <div className="font-semibold text-xs">Edad</div>
                     <div className="mt-0.5 text-2xl font-bold">{child.edad || 0}</div>
                   </div>
-                  <div className="bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center">
-                    <div className="font-semibold text-xs">Gender</div>
+                  <div className="bg-[#FBE7A1] rounded-tl-[40px] rounded-tr-[10px] rounded-bl-[10px] rounded-br-[40px] w-[60px] py-4 text-center">
+                    <div className="font-semibold text-xs">Genero</div>
                     <div className="mt-0.5 text-xl">
                       {child.genero === 'M' ? '♂' : '♀'}
                     </div>
@@ -273,11 +263,11 @@ export default function ProfilePage() {
 
                 <div className="overflow-hidden rounded-[24px] mb-3 h-[200px]">
                   <Image
-                    src={child.fotoUrl || child.foto_url || "/placeholder-child.jpg"}
-                    alt={child.nombre}
+                    src={getDirectImageUrl(child.fotoUrl || child.foto_url) || "/placeholder-child.jpg"}
+                    alt={child.nombre || "Niño"}
                     width={300}
-                    height={200}
-                    className="h-full w-full object-cover"
+                    height={300}
+                    className="w-full h-full object-cover"
                   />
                 </div>
 
@@ -287,9 +277,9 @@ export default function ProfilePage() {
                   </p>
                   <button 
                     onClick={() => handleViewBitacora(child.id_nino || child.id)}
-                    className="text-xs md:text-sm px-4 py-1.5 border-2 border-[#251264] rounded-full hover:bg-[#251264] hover:text-white transition whitespace-nowrap font-semibold"
+                    className="text-xs md:text-sm px-4 py-1.5 border-2 border-[#251264] rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px] hover:bg-[#251264] hover:text-white transition whitespace-nowrap font-semibold"
                   >
-                    bitacora
+                    Bitacora
                   </button>
                 </div>
               </article>
