@@ -47,7 +47,7 @@ export default function VoluntariadoPage() {
         <div className="flex justify-center mt-10">
           <button
             onClick={() => setShowInfo((prev) => !prev)}
-            className="px-8 py-3 rounded-full bg-[#251264] text-white font-semibold text-sm hover:bg-[#3a2f96] transition shadow-md"
+            className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-8 py-3 rounded-full bg-[#251264] text-white font-semibold text-sm hover:bg-[#3a2f96] transition shadow-md"
           >
             {showInfo ? "Ocultar Información de Contacto" : "Contáctanos"}
           </button>
@@ -81,20 +81,20 @@ export default function VoluntariadoPage() {
                   <li>
                     <span className="font-semibold">Correo:</span>{" "}
                     <a
-                      href="mailto:voluntariado@huahuacuna.com"
+                      href="mailto:fundacionhuahuacuna@gmail.com"
                       className="text-[#251264] underline underline-offset-2"
                     >
-                      voluntariado@huahuacuna.com
+                      fundacionhuahuacuna@gmail.com
                     </a>
                   </li>
                   <li>
-                    <span className="font-semibold">Teléfono:</span> +57 000 000 0000
+                    <span className="font-semibold">Teléfono:</span> +57 312 257 01 41
                   </li>
                   <li>
-                    <span className="font-semibold">WhatsApp:</span> +57 300 000 0000
+                    <span className="font-semibold">WhatsApp:</span> +57 312 257 01 41
                   </li>
                   <li>
-                    <span className="font-semibold">Dirección:</span> Casa de li
+                    <span className="font-semibold">Dirección:</span> Barrio Uribe Carrera 13 27-34
                   </li>
                 </ul>
               </div>

@@ -253,13 +253,13 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="text-sm px-4 py-1 rounded-full border border-black/70 hover:bg-black hover:text-white transition"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] text-sm px-4 py-1 rounded-full border border-black/70 hover:bg-black hover:text-white transition"
               >
                 Iniciar Sesión
               </Link>
               <Link
                 href="/registrar"
-                className="text-sm px-4 py-1 rounded-full bg-[#F1C927] hover:bg-[#e0b916] transition"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] text-sm px-4 py-1 rounded-full bg-[#F1C927] hover:bg-[#e0b916] transition"
               >
                 Registrarse
               </Link>

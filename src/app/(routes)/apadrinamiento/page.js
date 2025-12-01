@@ -106,13 +106,13 @@ export default function ApadrinamientoPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => router.push("/registrar")}
-                className="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-[#1A125C] font-bold rounded-full transition shadow-lg hover:shadow-xl"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-[#1A125C] font-bold rounded-full transition shadow-lg hover:shadow-xl"
               >
                 Registrarse como Padrino
               </button>
               <button
                 onClick={() => router.push("/login")}
-                className="px-8 py-3 border-2 border-[#1A125C] text-[#1A125C] font-bold rounded-full hover:bg-[#1A125C] hover:text-white transition"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-8 py-3 border-2 border-[#1A125C] text-[#1A125C] font-bold rounded-full hover:bg-[#1A125C] hover:text-white transition"
               >
                 Iniciar Sesión
               </button>
@@ -236,11 +236,11 @@ export default function ApadrinamientoPage() {
                 </h2>
 
                 <div className="flex justify-center gap-4 mb-4">
-                  <div className="bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center text-s">
+                  <div className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center text-s">
                     <div className="font-semibold">Edad</div>
                     <div className="mt-0.5 text-lg md:text-xs font-semi-bold">{child.edad || 0}</div>
                   </div>
-                  <div className="bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center text-s">
+                  <div className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center text-s">
                     <div className="font-semibold">Genero</div>
                     <div className="mt-0.5 text-lg md:text-xs font-semi-bold">
                       {child.genero === 'M' ? 'M' : 'F'}
@@ -264,7 +264,7 @@ export default function ApadrinamientoPage() {
                   </p>
                   <button 
                     onClick={() => handleViewMore(child.id_nino || child.id)}
-                    className="text-[10px] px-3 py-1 border border-[#251264] text-[#251264] rounded-tl-[20px] rounded-tr-lg rounded-bl-lg rounded-br-[20px] hover:bg-[#251264] hover:text-white transition whitespace-nowrap"
+                    className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] text-[10px] px-3 py-1 border border-[#251264] text-[#251264] rounded-tl-[20px] rounded-tr-lg rounded-bl-lg rounded-br-[20px] hover:bg-[#251264] hover:text-white transition whitespace-nowrap"
                   >
                     Ver mas
                   </button>

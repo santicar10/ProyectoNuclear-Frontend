@@ -46,14 +46,14 @@ export default function HeroSection() {
             {/* === Botones === */}
             <div className="flex gap-4">
               <button
-                className="rounded-full px-6 py-2 font-medium shadow-sm hover:scale-[1.03] transition-transform"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] w-[100px] font-medium shadow-sm hover:scale-[1.03] transition-transform"
                 style={{ background: "#F1C927", color: "#000" }}
               >
                 Donar
               </button>
 
               <button
-                className="rounded-full px-6 py-2 font-medium border transition-colors hover:bg-black hover:text-white"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] rounded-full px-6 py-2 font-medium border transition-colors hover:bg-black hover:text-white"
                 style={{ borderColor: "#000", color: "#ffffffff" }}
               >
                 Apadrinamiento

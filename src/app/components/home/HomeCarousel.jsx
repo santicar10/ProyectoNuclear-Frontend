@@ -81,13 +81,13 @@ export default function HomeCarousel() {
           <div className="flex gap-3 pt-4">
             <button
               onClick={() => router.push("/apadrinamiento")}
-              className="px-5 py-2.5 rounded-full bg-[#251264] text-white text-sm font-semibold hover:bg-[#3a2f96] transition"
+              className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-5 py-2.5 rounded-full bg-[#251264] text-white text-sm font-semibold hover:bg-[#3a2f96] transition"
             >
               Conoce cómo apadrinar
             </button>
             <button
               onClick={() => router.push("/sobre-nosotros")}
-              className="px-5 py-2.5 rounded-full border border-[#251264] text-[#251264] text-sm font-semibold hover:bg-[#251264] hover:text-white transition"
+              className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-5 py-2.5 rounded-full border border-[#251264] text-[#251264] text-sm font-semibold hover:bg-[#251264] hover:text-white transition"
             >
               Ver nuestra historia
             </button>
