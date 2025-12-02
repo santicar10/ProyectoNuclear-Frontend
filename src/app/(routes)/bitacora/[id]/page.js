@@ -1,241 +1,347 @@
-// src/app/(routes)/bitacora/[id]/page.js
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { getDirectImageUrl } from "@/app/lib/utils/imageUtils"; 
 import Button from "@components/common/Button";
+import LoadingState from "@components/common/LoadingState";
+import ErrorState from "@components/common/ErrorState";
 import Modal from "@components/common/Modal";
-import Textarea from "@components/common/Textarea";
+import { AddIcon } from "@components/common/Icons";
 import authService from "@/app/lib/services/auth.service";
+import childrenService from "@/app/lib/services/children.service";
 import bitacoraService from "@/app/lib/services/bitacora.service";
-import { generateBitacoraPDF } from "@/app/lib/utils/pdfGenerator";
 
-const ArrowBackIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+const EditIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+    />
   </svg>
 );
 
-const AddIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+const DeleteIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+    />
   </svg>
 );
 
-export default function BitacoraPage() {
-  const params = useParams();
+export default function GestionBitacorasPage() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [children, setChildren] = useState([]);
+  const [selectedChild, setSelectedChild] = useState(null);
   const [bitacoraEntries, setBitacoraEntries] = useState([]);
-  const [childName, setChildName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
-  const [userRole, setUserRole] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newEntry, setNewEntry] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [entryToDelete, setEntryToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    checkAuth();
-    loadBitacora();
-  }, [params.id]);
+    checkRole();
+  }, []);
 
-  const checkAuth = () => {
-    const userData = authService.getUserData();
-    setUserRole(userData?.rol);
-  };
-
-  const loadBitacora = async () => {
-    setIsLoading(true);
-    const result = await bitacoraService.getByChildId(params.id, page);
-    
-    if (result.success) {
-      if (page === 1) {
-        setBitacoraEntries(result.data);
-        setChildName(result.data[0]?.nombreNino || "");
-      } else {
-        setBitacoraEntries(prev => [...prev, ...result.data]);
-      }
-      setHasMore(result.hasMore);
+  useEffect(() => {
+    if (isAdmin) {
+      loadChildren();
     }
-    
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (selectedChild) {
+      loadBitacora();
+    }
+  }, [selectedChild]);
+
+  const checkRole = () => {
+    const user = authService.getUserData();
+    const admin = user?.rol === "administrador";
+    setIsAdmin(admin);
     setIsLoading(false);
   };
 
-  const handleLoadMore = () => {
-    setPage(prev => prev + 1);
-    loadBitacora();
-  };
-
-  const handleGeneratePDF = async () => {
-    try {
-      await generateBitacoraPDF(childName, bitacoraEntries);
-    } catch (error) {
-      alert("Error al generar PDF: " + error.message);
+  const loadChildren = async () => {
+    const result = await childrenService.getAll();
+    if (result.success) {
+      setChildren(result.data);
+      if (result.data.length > 0) {
+        setSelectedChild(result.data[0].id_nino || result.data[0].id);
+      }
+    } else {
+      setError(result.error);
     }
   };
 
-  const handleAddEntry = async () => {
-    if (!newEntry.trim()) {
-      alert("Debes escribir algo en la bitácora");
-      return;
-    }
+  const loadBitacora = async () => {
+    if (!selectedChild) return;
 
-    setIsSubmitting(true);
-    const result = await bitacoraService.createEntry(params.id, {
-      descripcion: newEntry,
-    });
+    setIsLoading(true);
+    const result = await bitacoraService.getByChildId(selectedChild, 1, 100);
 
     if (result.success) {
-      setShowAddModal(false);
-      setNewEntry("");
-      setPage(1);
-      loadBitacora();
-      alert("Entrada agregada exitosamente");
+      setBitacoraEntries(result.data);
     } else {
-      alert(result.error || "Error al agregar entrada");
+      setError(result.error);
     }
 
-    setIsSubmitting(false);
+    setIsLoading(false);
   };
 
-  const handleBack = () => {
-    router.push("/perfil");
+  const handleChildChange = (e) => {
+    setSelectedChild(e.target.value);
   };
 
-  const isAdmin = userRole === "administrador";
+  const handleCreate = () => {
+    router.push(`/bitacora/${selectedChild}/crear`);
+  };
+
+  const handleEdit = (entryId) => {
+    router.push(`/bitacora/${entryId}/editar`);
+  };
+
+  const handleDeleteClick = (entry) => {
+    setEntryToDelete(entry);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!entryToDelete) return;
+
+    setIsDeleting(true);
+    const result = await bitacoraService.delete(entryToDelete.id);
+
+    if (result.success) {
+      setBitacoraEntries((prev) => prev.filter((e) => e.id !== entryToDelete.id));
+      setShowDeleteModal(false);
+      setEntryToDelete(null);
+    } else {
+      alert(result.error || "Error al eliminar la entrada");
+    }
+
+    setIsDeleting(false);
+  };
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-24 flex items-center justify-center">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Acceso restringido</h1>
+          <p className="text-gray-600 mb-6">
+            Solo los administradores pueden gestionar bitácoras.
+          </p>
+          <Button
+            variant="warning"
+            className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] rounded-full px-8 font-semibold"
+            onClick={() => router.push("/")}
+          >
+            Volver al inicio
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !selectedChild) {
+    return <ErrorState message={error} onRetry={loadChildren} />;
+  }
+
+  const selectedChildData = children.find(
+    (c) => (c.id_nino || c.id) === parseInt(selectedChild)
+  );
 
   return (
-    <div className="min-h-screen bg-white pt-24 pb-12">
-      <div className="max-w-5xl mx-auto px-6">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={handleBack}
-            className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowBackIcon />
-            <span>Volver</span>
-          </button>
+    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900">Gestión de Bitácoras</h1>
+            <p className="text-gray-600 mt-2">
+              Administra las entradas de bitácora de cada niño
+            </p>
+          </div>
+        </div>
 
-          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-3xl p-8 text-white flex items-center justify-between">
-            <h1 className="text-4xl font-bold">BITACORA</h1>
-            {isAdmin && (
+        {/* Selector de niño */}
+        <div className="bg-white rounded-3xl shadow-xl p-6 mb-8">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Seleccionar Niño
+          </label>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* SELECT con estética tipo “Banco” */}
+            <div className="flex-1">
+              <div className="relative">
+                <select
+                  value={selectedChild || ""}
+                  onChange={handleChildChange}
+                  className="w-full px-4 py-3 bg-yellow-200 border border-yellow-300 text-gray-800 rounded-2xl shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 appearance-none pr-10"
+                >
+                  {children.map((child) => (
+                    <option
+                      key={child.id_nino || child.id}
+                      value={child.id_nino || child.id}
+                    >
+                      {child.nombre} - {child.edad} años
+                    </option>
+                  ))}
+                </select>
+
+                {/* Flechita personalizada */}
+                <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+                  <svg
+                    className="w-4 h-4 text-gray-700"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            {selectedChild && (
               <Button
-                onClick={() => setShowAddModal(true)}
+                onClick={handleCreate}
                 variant="warning"
                 icon={AddIcon}
                 iconPosition="left"
-                className="rounded-full shadow-lg bg-white text-gray-900 hover:bg-gray-100"
+                className="rounded-full shadow-lg"
               >
-                Agregar entrada
+                Nueva Entrada
               </Button>
             )}
           </div>
         </div>
 
-        {/* Entradas de bitácora */}
-        {bitacoraEntries.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No hay entradas en la bitácora</p>
+        {/* Lista de entradas */}
+        {isLoading ? (
+          <LoadingState message="Cargando bitácora..." fullScreen={false} />
+        ) : bitacoraEntries.length === 0 ? (
+          <div className="bg-white rounded-3xl p-12 text-center shadow-xl">
+            <p className="text-gray-600 text-lg mb-4">
+              No hay entradas en la bitácora de {selectedChildData?.nombre}
+            </p>
+            <Button
+              onClick={handleCreate}
+              variant="warning"
+              className="rounded-full"
+            >
+              Crear primera entrada
+            </Button>
           </div>
         ) : (
           <div className="space-y-6">
             {bitacoraEntries.map((entry) => (
               <div
                 key={entry.id}
-                className="bg-yellow-100 rounded-3xl p-6 shadow-md"
+                className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-shadow"
               >
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      {entry.nombreNino || childName}
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {entry.nombreNino || selectedChildData?.nombre}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-4">{entry.fecha}</p>
-                    <p className="text-gray-800 leading-relaxed whitespace-pre-line">
-                      {entry.descripcion}
-                    </p>
+                    <p className="text-sm text-gray-600">{entry.fecha}</p>
                   </div>
-
-                  {entry.imagen && (
-                    <div className="flex-shrink-0 w-48 h-48 bg-gray-200 rounded-2xl overflow-hidden">
-                      <Image
-                        src={entry.imagen}
-                        alt="Bitácora"
-                        width={192}
-                        height={192}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleEdit(entry.id)}
+                      variant="secondary"
+                      size="sm"
+                      icon={EditIcon}
+                      iconPosition="left"
+                      className="rounded-full"
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      onClick={() => handleDeleteClick(entry)}
+                      variant="danger"
+                      size="sm"
+                      icon={DeleteIcon}
+                      iconPosition="left"
+                      className="rounded-full"
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
                 </div>
+                <p className="text-gray-800 leading-relaxed whitespace-pre-line">
+                  {entry.descripcion}
+                </p>
+                {entry.imagen && (
+                  <div className="mt-4 flex-shrink-0 w-48 h-48 bg-gray-200 rounded-2xl overflow-hidden">
+                    <Image
+                      src={getDirectImageUrl(entry.imagen)}
+                      alt="Bitácora"
+                      width={192}
+                      height={192}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
-
-        {/* Botones de acción */}
-        <div className="flex justify-center gap-4 mt-8">
-          {hasMore && (
-            <Button
-              onClick={handleLoadMore}
-              isLoading={isLoading}
-              variant="warning"
-              className="rounded-full px-8 font-semibold"
-            >
-              Cargar más
-            </Button>
-          )}
-
-          {bitacoraEntries.length > 0 && (
-            <Button
-              onClick={handleGeneratePDF}
-              variant="warning"
-              className="rounded-full px-8 font-semibold"
-            >
-              PDF
-            </Button>
-          )}
-        </div>
       </div>
 
-      {/* Modal para agregar entrada */}
+      {/* Modal de confirmación de eliminación */}
       <Modal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Agregar entrada a la bitácora"
-        size="lg"
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Eliminar Entrada"
+        size="md"
       >
-        <div className="space-y-6">
-          <Textarea
-            label="Descripción"
-            name="descripcion"
-            placeholder="Escribe aquí la entrada de la bitácora..."
-            value={newEntry}
-            onChange={(e) => setNewEntry(e.target.value)}
-            rows={10}
-            labelClassName="text-gray-800"
-            textareaClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
-          />
+        <div className="space-y-4">
+          <p className="text-gray-700">
+            ¿Estás seguro de que deseas eliminar esta entrada de bitácora? Esta
+            acción no se puede deshacer.
+          </p>
 
-          <div className="flex gap-4">
+          {entryToDelete && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <p className="text-sm text-gray-700">
+                <strong>Fecha:</strong> {entryToDelete.fecha}
+              </p>
+              <p className="text-sm text-gray-700 mt-2 line-clamp-3">
+                {entryToDelete.descripcion}
+              </p>
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-4">
             <Button
-              type="button"
+              onClick={() => setShowDeleteModal(false)}
               variant="outline"
-              onClick={() => setShowAddModal(false)}
-              className="rounded-full flex-1"
+              className="flex-1 rounded-full"
+              disabled={isDeleting}
             >
               Cancelar
             </Button>
             <Button
-              type="button"
-              variant="warning"
-              onClick={handleAddEntry}
-              isLoading={isSubmitting}
-              className="rounded-full flex-1 font-bold"
+              onClick={handleConfirmDelete}
+              variant="danger"
+              className="flex-1 rounded-full"
+              isLoading={isDeleting}
             >
-              Agregar
+              Eliminar
             </Button>
           </div>
         </div>

@@ -73,7 +73,7 @@ export default function ChildrenListPage({
             variant="warning"
             icon={AddIcon}
             iconPosition="left"
-            className="rounded-full shadow-lg"
+            className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] rounded-full shadow-lg"
           >
             Agregar Niño
           </Button>

@@ -197,7 +197,7 @@ export default function EditChildPage() {
                 type="button"
                 variant="outline"
                 onClick={handleBack}
-                className="rounded-full flex-1"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] rounded-full flex-1"
               >
                 Cancelar
               </Button>
@@ -205,7 +205,7 @@ export default function EditChildPage() {
                 type="submit"
                 variant="warning"
                 isLoading={isLoading}
-                className="rounded-full flex-1 font-bold"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] rounded-full flex-1 font-bold"
               >
                 Guardar Cambios
               </Button>
