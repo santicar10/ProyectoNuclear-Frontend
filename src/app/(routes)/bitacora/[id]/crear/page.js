@@ -1,3 +1,4 @@
+// src/app/(routes)/bitacora/crear/page.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,7 +6,6 @@ import { useRouter } from "next/navigation";
 import Input from "@components/common/inputs/Input";
 import Textarea from "@components/common/Textarea";
 import Button from "@components/common/Button";
-import Select from "@components/common/Select";
 import childrenService from "@/app/lib/services/children.service";
 import bitacoraService from "@/app/lib/services/bitacora.service";
 import authService from "@/app/lib/services/auth.service";
@@ -96,7 +96,7 @@ export default function CreateBitacoraEntryPage() {
   };
 
   const handleBack = () => {
-    router.push("/perfil"); // ajusta si quieres volver a otra ruta
+    router.push("/perfil");
   };
 
   const handleSubmit = async (e) => {
@@ -171,17 +171,26 @@ export default function CreateBitacoraEntryPage() {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6 text-[#1A125C]">
-            <Select
-              label="Niño / Niña"
-              name="childId"
-              options={childrenOptions}
-              value={formData.childId}
-              onChange={handleSelectChange}
-              error={errors.childId}
-              labelClassName="text-gray-800"
-              selectClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
-              placeholder="Selecciona un niño o niña"
-            />
+            {/* SELECT NIÑO/NIÑA ESTÉTICO */}
+            <div>
+              <label className="block mb-2 text-gray-800">Niño / Niña</label>
+              <select
+                name="childId"
+                value={formData.childId}
+                onChange={handleSelectChange}
+                className="w-full px-4 py-3 bg-yellow-200 focus:outline-none rounded-2xl"
+              >
+                <option value="">Selecciona un niño o niña</option>
+                {childrenOptions.map((child) => (
+                  <option key={child.value} value={child.value}>
+                    {child.label}
+                  </option>
+                ))}
+              </select>
+              {errors.childId && (
+                <p className="text-red-600 text-sm mt-1">{errors.childId}</p>
+              )}
+            </div>
 
             <Input
               label="URL de Imagen (opcional)"

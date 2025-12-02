@@ -140,71 +140,82 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               {userRole === "administrador" && (
                 <div className="relative" ref={managementRef}>
-                  <button
-                    onClick={() => setShowManagementMenu(!showManagementMenu)}
-                    className="text-sm px-4 py-1 rounded-full bg-yellow-400 hover:bg-yellow-500 transition font-medium flex items-center gap-2"
-                  >
-                    <span>Gestión</span>
-                    <svg 
-                      className={`w-4 h-4 transition-transform ${showManagementMenu ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
+  <button
+    onClick={() => setShowManagementMenu(!showManagementMenu)}
+    className="text-sm px-4 py-1 rounded-full bg-yellow-400 hover:bg-yellow-500 transition font-medium flex items-center gap-2"
+  >
+    <span>Gestión</span>
+    <svg 
+      className={`w-4 h-4 transition-transform ${showManagementMenu ? 'rotate-180' : ''}`} 
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
 
-                  {showManagementMenu && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
-                      <Link
-                        href="/ninos"
-                        onClick={() => setShowManagementMenu(false)}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        Gestionar Niños
-                      </Link>
-                      
-                      <Link
-                        href="/evento/crear"
-                        onClick={() => setShowManagementMenu(false)}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Gestionar Eventos
-                      </Link>
+  {showManagementMenu && (
+    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+      <Link
+        href="/ninos"
+        onClick={() => setShowManagementMenu(false)}
+        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        Gestionar Niños
+      </Link>
+      
+      <Link
+        href="/evento/crear"
+        onClick={() => setShowManagementMenu(false)}
+        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        Gestionar Eventos
+      </Link>
 
-                      <div className="border-t border-gray-200 my-2"></div>
+      <Link
+        href="/bitacora"
+        onClick={() => setShowManagementMenu(false)}
+        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Gestionar Bitácoras
+      </Link>
 
-                      <button
-                        disabled
-                        className="w-full text-left px-4 py-2 text-sm text-gray-400 cursor-not-allowed flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        Gestionar Voluntarios
-                        <span className="ml-auto text-xs text-gray-400">(Próximamente)</span>
-                      </button>
+      <div className="border-t border-gray-200 my-2"></div>
 
-                      <button
-                        disabled
-                        className="w-full text-left px-4 py-2 text-sm text-gray-400 cursor-not-allowed flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Gestionar Donaciones
-                        <span className="ml-auto text-xs text-gray-400">(Próximamente)</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
+      <button
+        disabled
+        className="w-full text-left px-4 py-2 text-sm text-gray-400 cursor-not-allowed flex items-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        Gestionar Voluntarios
+        <span className="ml-auto text-xs text-gray-400">(Próximamente)</span>
+      </button>
+
+      <button
+        disabled
+        className="w-full text-left px-4 py-2 text-sm text-gray-400 cursor-not-allowed flex items-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Gestionar Donaciones
+        <span className="ml-auto text-xs text-gray-400">(Próximamente)</span>
+      </button>
+    </div>
+  )}
+</div>
               )}
               
               {/* Menú de perfil con dropdown */}
@@ -253,7 +264,7 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] text-sm px-4 py-1 rounded-full border border-black/70 hover:bg-black hover:text-white transition"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] text-sm px-4 py-1 rounded-full border border-[#251264] text-[#251264] text-sm font-semibold hover:bg-[#251264] hover:text-white transition"
               >
                 Iniciar Sesión
               </Link>

@@ -32,7 +32,6 @@ export default function EditBitacoraEntryPage() {
   const [isCheckingRole, setIsCheckingRole] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Verificar rol y cargar datos
   useEffect(() => {
     checkRole();
     loadChildren();
@@ -88,17 +87,11 @@ export default function EditBitacoraEntryPage() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.childId) {
-      newErrors.childId = "Debes seleccionar un niño o niña.";
-    }
-
-    if (!formData.descripcion.trim()) {
+    if (!formData.childId) newErrors.childId = "Debes seleccionar un niño o niña.";
+    if (!formData.descripcion.trim())
       newErrors.descripcion = "La descripción de la bitácora es obligatoria.";
-    }
-
-    if (formData.fotoUrl && !/^https?:\/\/.+/i.test(formData.fotoUrl)) {
+    if (formData.fotoUrl && !/^https?:\/\/.+/i.test(formData.fotoUrl))
       newErrors.fotoUrl = "La URL de la imagen no es válida.";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -107,27 +100,18 @@ export default function EditBitacoraEntryPage() {
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleBack = () => {
-    if (formData.childId) {
-      router.push(`/bitacora/${formData.childId}`);
-    } else {
-      router.push("/perfil");
-    }
+    if (formData.childId) router.push(`/bitacora/${formData.childId}`);
+    else router.push("/perfil");
   };
 
   const handleSubmit = async (e) => {
@@ -205,6 +189,8 @@ export default function EditBitacoraEntryPage() {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6 text-[#1A125C]">
+
+            {/* SELECT con estética unificada */}
             <Select
               label="Niño / Niña"
               name="childId"
@@ -213,10 +199,11 @@ export default function EditBitacoraEntryPage() {
               onChange={handleSelectChange}
               error={errors.childId}
               labelClassName="text-gray-800"
-              selectClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+              selectClassName="w-full px-4 py-3 bg-yellow-200 rounded-2xl focus:outline-none"
               placeholder="Selecciona un niño o niña"
             />
 
+            {/* INPUT URL con la misma estética */}
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">
                 URL de Imagen (opcional)
@@ -227,13 +214,14 @@ export default function EditBitacoraEntryPage() {
                 value={formData.fotoUrl}
                 onChange={handleChange}
                 placeholder="https://ejemplo.com/imagen.jpg"
-                className="w-full bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full bg-yellow-200 px-4 py-3 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
               {errors.fotoUrl && (
                 <p className="mt-1 text-xs text-red-600">{errors.fotoUrl}</p>
               )}
             </div>
 
+            {/* TEXTAREA uniforme */}
             <Textarea
               label="Descripción de la entrada"
               name="descripcion"
@@ -243,7 +231,7 @@ export default function EditBitacoraEntryPage() {
               error={errors.descripcion}
               rows={8}
               labelClassName="text-gray-800"
-              textareaClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+              textareaClassName="bg-yellow-200 border-none rounded-2xl focus:ring-yellow-400"
             />
 
             {errors.submit && (

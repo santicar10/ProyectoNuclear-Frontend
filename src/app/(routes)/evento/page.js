@@ -130,7 +130,7 @@ export default function EventoPage() {
 
                 <button
                   onClick={() => handleOpen(child)}
-                  className="border border-[#251264] px-4 py-1 text-xs rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] hover:bg-[#251264] hover:text-white transition"
+                  className="border border-[#251264] px-6 py-1 text-xs rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] hover:bg-[#251264] hover:text-white transition"
                 >
                   Ver más
                 </button>

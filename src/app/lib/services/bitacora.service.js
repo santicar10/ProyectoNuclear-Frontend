@@ -11,28 +11,71 @@ class BitacoraService extends BaseCrudService {
   /**
    * Obtiene la bitácora de un niño
    */
-  async getByChildId(childId, page = 1, limit = 10) {
-    try {
-      const response = await this.httpClient.get(
-        `${this.endpoint}/nino/${childId}?page=${page}&limit=${limit}`
-      );
-      
-      // Transformar datos
-      const entries = Array.isArray(response) ? response : (response.entries || []);
-      
-      return {
-        success: true,
-        data: entries.map(entry => this.transformItem(entry)),
-        hasMore: response.hasMore ?? (entries.length === limit),
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
+  async getByChildId(childId, page = 1, limit = 100) {
+  try {
+    const response = await this.httpClient.get(
+      `${this.endpoint}/nino/${childId}`
+    );
+    
+    return {
+      success: true,
+      data: Array.isArray(response) ? response : [],
+      hasMore: false,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      data: [],
+    };
   }
+}
 
+async createEntry(childId, entryData) {
+  try {
+    const response = await this.httpClient.post(
+      `${this.endpoint}/nino/${childId}`,
+      {
+        ninoId: childId,
+        descripcion: entryData.descripcion,
+        imagen: entryData.imagen || null,
+      }
+    );
+    return {
+      success: true,
+      data: response,
+      message: 'Entrada creada exitosamente',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+async update(id, entryData) {
+  try {
+    const response = await this.httpClient.patch(
+      `${this.endpoint}/${id}`,
+      {
+        ninoId: entryData.ninoId,
+        descripcion: entryData.descripcion,
+        imagen: entryData.imagen || null,
+      }
+    );
+    return {
+      success: true,
+      data: response,
+      message: 'Entrada actualizada exitosamente',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
   /**
    * Crea una entrada de bitácora
    */
@@ -57,6 +100,38 @@ class BitacoraService extends BaseCrudService {
       };
     }
   }
+
+  /**
+   * Elimina una entrada de bitácora
+   */
+  async delete(id) {
+    if (!this.validateId(id)) {
+      return {
+        success: false,
+        error: 'ID de entrada inválido',
+      };
+    }
+
+    try {
+      await this.httpClient.delete(`${this.endpoint}/${id}`);
+      return {
+        success: true,
+        message: 'Entrada eliminada exitosamente',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+/**
+ * Valida un ID
+ */
+validateId(id) {
+  return id && id !== 'undefined' && id !== 'null' && !isNaN(id);
+}
 
   /**
    * Transforma una entrada de bitácora
