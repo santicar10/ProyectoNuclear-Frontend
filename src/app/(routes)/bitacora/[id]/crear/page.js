@@ -1,8 +1,7 @@
-// src/app/(routes)/bitacora/crear/page.js
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Input from "@components/common/inputs/Input";
 import Textarea from "@components/common/Textarea";
 import Button from "@components/common/Button";
@@ -18,14 +17,15 @@ const ArrowBackIcon = () => (
 
 export default function CreateBitacoraEntryPage() {
   const router = useRouter();
+  const params = useParams();
+  const childId = params.id;
 
   const [formData, setFormData] = useState({
-    childId: "",
     descripcion: "",
     fotoUrl: "",
   });
 
-  const [childrenOptions, setChildrenOptions] = useState([]);
+  const [childName, setChildName] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingRole, setIsCheckingRole] = useState(true);
@@ -33,7 +33,7 @@ export default function CreateBitacoraEntryPage() {
 
   useEffect(() => {
     checkRole();
-    loadChildren();
+    loadChildInfo();
   }, []);
 
   const checkRole = () => {
@@ -43,27 +43,19 @@ export default function CreateBitacoraEntryPage() {
     setIsCheckingRole(false);
   };
 
-  const loadChildren = async () => {
+  const loadChildInfo = async () => {
     try {
-      const result = await childrenService.getAll?.();
-      if (result?.success && Array.isArray(result.data)) {
-        const options = result.data.map((child) => ({
-          value: child.id,
-          label: child.nombre,
-        }));
-        setChildrenOptions(options);
+      const result = await childrenService.getById(childId);
+      if (result?.success && result.data) {
+        setChildName(result.data.nombre);
       }
     } catch (error) {
-      console.error("Error cargando niños:", error);
+      console.error("Error cargando niño:", error);
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.childId) {
-      newErrors.childId = "Debes seleccionar un niño o niña.";
-    }
 
     if (!formData.descripcion.trim()) {
       newErrors.descripcion = "La descripción de la bitácora es obligatoria.";
@@ -86,17 +78,8 @@ export default function CreateBitacoraEntryPage() {
     }
   };
 
-  const handleSelectChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
   const handleBack = () => {
-    router.push("/perfil");
+    router.push('/bitacora');
   };
 
   const handleSubmit = async (e) => {
@@ -108,14 +91,14 @@ export default function CreateBitacoraEntryPage() {
     setErrors({});
 
     try {
-      const result = await bitacoraService.createEntry(formData.childId, {
+      const result = await bitacoraService.createEntry(childId, {
         descripcion: formData.descripcion,
         imagen: formData.fotoUrl || null,
       });
 
       if (result.success) {
         alert(result.message || "Entrada de bitácora registrada correctamente.");
-        router.push(`/bitacora/${formData.childId}`);
+        router.push(`/bitacora/${childId}`);
       } else {
         setErrors({ submit: result.error || "No se pudo registrar la entrada." });
       }
@@ -166,32 +149,16 @@ export default function CreateBitacoraEntryPage() {
             <span>Volver</span>
           </button>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Registrar entrada en la bitácora
           </h1>
+          {childName && (
+            <p className="text-gray-600 mb-8">
+              Para: <span className="font-semibold text-[#1A125C]">{childName}</span>
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6 text-[#1A125C]">
-            {/* SELECT NIÑO/NIÑA ESTÉTICO */}
-            <div>
-              <label className="block mb-2 text-gray-800">Niño / Niña</label>
-              <select
-                name="childId"
-                value={formData.childId}
-                onChange={handleSelectChange}
-                className="w-full px-4 py-3 bg-yellow-200 focus:outline-none rounded-2xl"
-              >
-                <option value="">Selecciona un niño o niña</option>
-                {childrenOptions.map((child) => (
-                  <option key={child.value} value={child.value}>
-                    {child.label}
-                  </option>
-                ))}
-              </select>
-              {errors.childId && (
-                <p className="text-red-600 text-sm mt-1">{errors.childId}</p>
-              )}
-            </div>
-
             <Input
               label="URL de Imagen (opcional)"
               type="text"

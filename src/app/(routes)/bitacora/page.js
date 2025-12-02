@@ -1,8 +1,9 @@
-// src/app/(routes)/bitacora/page.js
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { getDirectImageUrl } from "@/app/lib/utils/imageUtils"; 
 import Button from "@components/common/Button";
 import LoadingState from "@components/common/LoadingState";
 import ErrorState from "@components/common/ErrorState";
@@ -14,13 +15,23 @@ import bitacoraService from "@/app/lib/services/bitacora.service";
 
 const EditIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+    />
   </svg>
 );
 
 const DeleteIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+    />
   </svg>
 );
 
@@ -73,16 +84,16 @@ export default function GestionBitacorasPage() {
 
   const loadBitacora = async () => {
     if (!selectedChild) return;
-    
+
     setIsLoading(true);
     const result = await bitacoraService.getByChildId(selectedChild, 1, 100);
-    
+
     if (result.success) {
       setBitacoraEntries(result.data);
     } else {
       setError(result.error);
     }
-    
+
     setIsLoading(false);
   };
 
@@ -105,18 +116,18 @@ export default function GestionBitacorasPage() {
 
   const handleConfirmDelete = async () => {
     if (!entryToDelete) return;
-    
+
     setIsDeleting(true);
     const result = await bitacoraService.delete(entryToDelete.id);
-    
+
     if (result.success) {
-      setBitacoraEntries(prev => prev.filter(e => e.id !== entryToDelete.id));
+      setBitacoraEntries((prev) => prev.filter((e) => e.id !== entryToDelete.id));
       setShowDeleteModal(false);
       setEntryToDelete(null);
     } else {
       alert(result.error || "Error al eliminar la entrada");
     }
-    
+
     setIsDeleting(false);
   };
 
@@ -144,8 +155,8 @@ export default function GestionBitacorasPage() {
     return <ErrorState message={error} onRetry={loadChildren} />;
   }
 
-  const selectedChildData = children.find(c => 
-    (c.id_nino || c.id) === parseInt(selectedChild)
+  const selectedChildData = children.find(
+    (c) => (c.id_nino || c.id) === parseInt(selectedChild)
   );
 
   return (
@@ -153,9 +164,7 @@ export default function GestionBitacorasPage() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">
-              Gestión de Bitácoras
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900">Gestión de Bitácoras</h1>
             <p className="text-gray-600 mt-2">
               Administra las entradas de bitácora de cada niño
             </p>
@@ -167,18 +176,45 @@ export default function GestionBitacorasPage() {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Seleccionar Niño
           </label>
-          <div className="flex gap-4">
-            <select
-              value={selectedChild || ""}
-              onChange={handleChildChange}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-            >
-              {children.map((child) => (
-                <option key={child.id_nino || child.id} value={child.id_nino || child.id}>
-                  {child.nombre} - {child.edad} años
-                </option>
-              ))}
-            </select>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* SELECT con estética tipo “Banco” */}
+            <div className="flex-1">
+              <div className="relative">
+                <select
+                  value={selectedChild || ""}
+                  onChange={handleChildChange}
+                  className="w-full px-4 py-3 bg-yellow-200 border border-yellow-300 text-gray-800 rounded-2xl shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 appearance-none pr-10"
+                >
+                  {children.map((child) => (
+                    <option
+                      key={child.id_nino || child.id}
+                      value={child.id_nino || child.id}
+                    >
+                      {child.nombre} - {child.edad} años
+                    </option>
+                  ))}
+                </select>
+
+                {/* Flechita personalizada */}
+                <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+                  <svg
+                    className="w-4 h-4 text-gray-700"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+
             {selectedChild && (
               <Button
                 onClick={handleCreate}
@@ -250,11 +286,13 @@ export default function GestionBitacorasPage() {
                   {entry.descripcion}
                 </p>
                 {entry.imagen && (
-                  <div className="mt-4">
-                    <img
-                      src={entry.imagen}
+                  <div className="mt-4 flex-shrink-0 w-48 h-48 bg-gray-200 rounded-2xl overflow-hidden">
+                    <Image
+                      src={getDirectImageUrl(entry.imagen)}
                       alt="Bitácora"
-                      className="rounded-lg max-h-64 object-cover"
+                      width={192}
+                      height={192}
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 )}
@@ -273,9 +311,10 @@ export default function GestionBitacorasPage() {
       >
         <div className="space-y-4">
           <p className="text-gray-700">
-            ¿Estás seguro de que deseas eliminar esta entrada de bitácora? Esta acción no se puede deshacer.
+            ¿Estás seguro de que deseas eliminar esta entrada de bitácora? Esta
+            acción no se puede deshacer.
           </p>
-          
+
           {entryToDelete && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-sm text-gray-700">

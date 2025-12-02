@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@components/common/Button";
 import ChildCard from "@components/children/ChildCard";
@@ -11,8 +11,9 @@ import { AddIcon } from "@components/common/Icons";
 // Hooks con inyección de dependencias
 import { useService } from "@/app/lib/hooks/useService";
 
-// Servicio (puede ser inyectado para testing)
+// Servicios
 import childrenService from "@/app/lib/services/children.service";
+import authService from "@/app/lib/services/auth.service";
 
 /**
  * Página de listado de niños refactorizada siguiendo SOLID
@@ -27,6 +28,7 @@ export default function ChildrenListPage({
   service = childrenService 
 }) {
   const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
   
   // Hook genérico de servicio CRUD
   const {
@@ -39,10 +41,22 @@ export default function ChildrenListPage({
   } = useService(service);
 
   useEffect(() => {
+    // Verificar rol del usuario
+    const user = authService.getUserData();
+    setIsAdmin(user?.rol === "administrador");
+    
     loadAll();
   }, [loadAll]);
 
   const handleDelete = async (id) => {
+    if (!isAdmin) {
+      alert("No tienes permisos para eliminar niños.");
+      return;
+    }
+
+    const confirmDelete = confirm("¿Estás seguro de que deseas eliminar este niño?");
+    if (!confirmDelete) return;
+
     const result = await remove(id);
     if (!result.success) {
       alert(result.error);
@@ -50,6 +64,10 @@ export default function ChildrenListPage({
   };
 
   const handleCreate = () => {
+    if (!isAdmin) {
+      alert("No tienes permisos para crear niños.");
+      return;
+    }
     router.push('/ninos/crear');
   };
 
@@ -66,25 +84,28 @@ export default function ChildrenListPage({
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900">
-            Gestión de Niños
+            {isAdmin ? "Gestión de Niños" : "Niños"}
           </h1>
-          <Button
-            onClick={handleCreate}
-            variant="warning"
-            icon={AddIcon}
-            iconPosition="left"
-            className="rounded-full shadow-lg"
-          >
-            Agregar Niño
-          </Button>
+          {isAdmin && (
+            <Button
+              onClick={handleCreate}
+              variant="warning"
+              icon={AddIcon}
+              iconPosition="left"
+              className="rounded-full shadow-lg"
+            >
+              Agregar Niño
+            </Button>
+          )}
         </div>
 
         {!children || children.length === 0 ? (
-          <EmptyState onCreateClick={handleCreate} />
+          <EmptyState onCreateClick={handleCreate} isAdmin={isAdmin} />
         ) : (
           <ChildrenGrid 
             children={children} 
-            onDelete={handleDelete} 
+            onDelete={handleDelete}
+            isAdmin={isAdmin}
           />
         )}
       </div>
@@ -94,22 +115,26 @@ export default function ChildrenListPage({
 
 // Componentes internos siguiendo SRP
 
-function EmptyState({ onCreateClick }) {
+function EmptyState({ onCreateClick, isAdmin }) {
   return (
     <div className="bg-white rounded-3xl p-12 text-center shadow-2xl">
-      <p className="text-gray-600 text-lg mb-4">No hay niños registrados</p>
-      <Button
-        onClick={onCreateClick}
-        variant="warning"
-        className="rounded-full"
-      >
-        Registrar primer niño
-      </Button>
+      <p className="text-gray-600 text-lg mb-4">
+        {isAdmin ? "No hay niños registrados" : "No hay niños disponibles"}
+      </p>
+      {isAdmin && (
+        <Button
+          onClick={onCreateClick}
+          variant="warning"
+          className="rounded-full"
+        >
+          Registrar primer niño
+        </Button>
+      )}
     </div>
   );
 }
 
-function ChildrenGrid({ children, onDelete }) {
+function ChildrenGrid({ children, onDelete, isAdmin }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {children.map((child) => (
@@ -117,7 +142,7 @@ function ChildrenGrid({ children, onDelete }) {
           key={child.id_nino || child.id}
           child={child}
           onDelete={onDelete}
-          showActions={true}
+          showActions={isAdmin} 
         />
       ))}
     </div>

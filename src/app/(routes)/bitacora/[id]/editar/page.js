@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Select from "@components/common/Select";
 import Textarea from "@components/common/Textarea";
 import Button from "@components/common/Button";
 import childrenService from "@/app/lib/services/children.service";
@@ -21,11 +20,11 @@ export default function EditBitacoraEntryPage() {
 
   const [formData, setFormData] = useState({
     childId: "",
+    childName: "",
     descripcion: "",
     fotoUrl: "",
   });
 
-  const [childrenOptions, setChildrenOptions] = useState([]);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -34,7 +33,6 @@ export default function EditBitacoraEntryPage() {
 
   useEffect(() => {
     checkRole();
-    loadChildren();
     loadEntry();
   }, [params.id]);
 
@@ -45,21 +43,6 @@ export default function EditBitacoraEntryPage() {
     setIsCheckingRole(false);
   };
 
-  const loadChildren = async () => {
-    try {
-      const result = await childrenService.getAll?.();
-      if (result?.success && Array.isArray(result.data)) {
-        const options = result.data.map((child) => ({
-          value: child.id,
-          label: child.nombre,
-        }));
-        setChildrenOptions(options);
-      }
-    } catch (error) {
-      console.error("Error cargando niños:", error);
-    }
-  };
-
   const loadEntry = async () => {
     setIsFetching(true);
     try {
@@ -67,18 +50,35 @@ export default function EditBitacoraEntryPage() {
 
       if (result.success) {
         const entry = result.data;
+        
+        // Cargar el nombre del niño
+        const childId = entry.ninoId || entry.childId;
+        let childName = "";
+        
+        if (childId) {
+          try {
+            const childResult = await childrenService.getById(childId);
+            if (childResult?.success && childResult.data) {
+              childName = childResult.data.nombre;
+            }
+          } catch (error) {
+            console.error("Error cargando nombre del niño:", error);
+          }
+        }
+
         setFormData({
-          childId: entry.ninoId || entry.childId || "",
+          childId: String(childId || ""),
+          childName: childName,
           descripcion: entry.descripcion || "",
           fotoUrl: entry.imagen || "",
         });
       } else {
         alert(result.error || "No se pudo cargar la entrada de bitácora.");
-        router.push("/perfil");
+        router.push("/ninos"); // Cambiar a la lista de niños en lugar de perfil
       }
     } catch (error) {
       alert("Error inesperado al cargar la bitácora.");
-      router.push("/perfil");
+      router.push("/ninos"); // Cambiar a la lista de niños en lugar de perfil
     } finally {
       setIsFetching(false);
     }
@@ -87,7 +87,6 @@ export default function EditBitacoraEntryPage() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.childId) newErrors.childId = "Debes seleccionar un niño o niña.";
     if (!formData.descripcion.trim())
       newErrors.descripcion = "La descripción de la bitácora es obligatoria.";
     if (formData.fotoUrl && !/^https?:\/\/.+/i.test(formData.fotoUrl))
@@ -97,12 +96,6 @@ export default function EditBitacoraEntryPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSelectChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -110,8 +103,7 @@ export default function EditBitacoraEntryPage() {
   };
 
   const handleBack = () => {
-    if (formData.childId) router.push(`/bitacora/${formData.childId}`);
-    else router.push("/perfil");
+    router.push(`/bitacora/${formData.childId}`);
   };
 
   const handleSubmit = async (e) => {
@@ -126,7 +118,6 @@ export default function EditBitacoraEntryPage() {
       const payload = {
         descripcion: formData.descripcion,
         imagen: formData.fotoUrl || null,
-        ninoId: formData.childId,
       };
 
       const result = await bitacoraService.update(params.id, payload);
@@ -184,26 +175,19 @@ export default function EditBitacoraEntryPage() {
             <span>Volver</span>
           </button>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Editar entrada de bitácora
           </h1>
+          
+          {formData.childName && (
+            <p className="text-gray-600 mb-8">
+              Para: <span className="font-semibold text-[#1A125C]">{formData.childName}</span>
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6 text-[#1A125C]">
 
-            {/* SELECT con estética unificada */}
-            <Select
-              label="Niño / Niña"
-              name="childId"
-              options={childrenOptions}
-              value={formData.childId}
-              onChange={handleSelectChange}
-              error={errors.childId}
-              labelClassName="text-gray-800"
-              selectClassName="w-full px-4 py-3 bg-yellow-200 rounded-2xl focus:outline-none"
-              placeholder="Selecciona un niño o niña"
-            />
-
-            {/* INPUT URL con la misma estética */}
+            {/* INPUT URL */}
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">
                 URL de Imagen (opcional)
@@ -214,14 +198,14 @@ export default function EditBitacoraEntryPage() {
                 value={formData.fotoUrl}
                 onChange={handleChange}
                 placeholder="https://ejemplo.com/imagen.jpg"
-                className="w-full bg-yellow-200 px-4 py-3 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full bg-yellow-100 px-4 py-3 rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
               {errors.fotoUrl && (
                 <p className="mt-1 text-xs text-red-600">{errors.fotoUrl}</p>
               )}
             </div>
 
-            {/* TEXTAREA uniforme */}
+            {/* TEXTAREA */}
             <Textarea
               label="Descripción de la entrada"
               name="descripcion"
@@ -231,7 +215,7 @@ export default function EditBitacoraEntryPage() {
               error={errors.descripcion}
               rows={8}
               labelClassName="text-gray-800"
-              textareaClassName="bg-yellow-200 border-none rounded-2xl focus:ring-yellow-400"
+              textareaClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
             />
 
             {errors.submit && (

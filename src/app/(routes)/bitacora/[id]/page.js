@@ -1,9 +1,9 @@
-// src/app/(routes)/bitacora/[id]/page.js
 "use client";
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { getDirectImageUrl } from "@/app/lib/utils/imageUtils"; 
 import Button from "@components/common/Button";
 import Modal from "@components/common/Modal";
 import Textarea from "@components/common/Textarea";
@@ -49,22 +49,22 @@ export default function BitacoraPage() {
   const loadBitacora = async () => {
     setIsLoading(true);
     const result = await bitacoraService.getByChildId(params.id, page);
-    
+
     if (result.success) {
       if (page === 1) {
         setBitacoraEntries(result.data);
         setChildName(result.data[0]?.nombreNino || "");
       } else {
-        setBitacoraEntries(prev => [...prev, ...result.data]);
+        setBitacoraEntries((prev) => [...prev, ...result.data]);
       }
       setHasMore(result.hasMore);
     }
-    
+
     setIsLoading(false);
   };
 
   const handleLoadMore = () => {
-    setPage(prev => prev + 1);
+    setPage((prev) => prev + 1);
     loadBitacora();
   };
 
@@ -101,7 +101,7 @@ export default function BitacoraPage() {
   };
 
   const handleBack = () => {
-    router.push("/perfil");
+    router.push('/perfil');
   };
 
   const isAdmin = userRole === "administrador";
@@ -161,7 +161,7 @@ export default function BitacoraPage() {
                   {entry.imagen && (
                     <div className="flex-shrink-0 w-48 h-48 bg-gray-200 rounded-2xl overflow-hidden">
                       <Image
-                        src={entry.imagen}
+                        src={getDirectImageUrl(entry.imagen)}
                         alt="Bitácora"
                         width={192}
                         height={192}
@@ -216,7 +216,7 @@ export default function BitacoraPage() {
             onChange={(e) => setNewEntry(e.target.value)}
             rows={10}
             labelClassName="text-gray-800"
-            textareaClassName="bg-yellow-100 border-none rounded-tl-3xl rounded-tr-lg rounded-bl-lg rounded-br-3xl focus:ring-yellow-400"
+            textareaClassName="bg-yellow-200 border-none rounded-2xl focus:ring-yellow-400"
           />
 
           <div className="flex gap-4">
