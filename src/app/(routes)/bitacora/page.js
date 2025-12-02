@@ -1,3 +1,4 @@
+// src/app/(routes)/bitacora/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -134,14 +135,14 @@ export default function GestionBitacorasPage() {
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-gray-50 pt-24 flex items-center justify-center">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md text-center">
+        <div className="bg-white rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] shadow-2xl p-8 max-w-md text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Acceso restringido</h1>
           <p className="text-gray-600 mb-6">
             Solo los administradores pueden gestionar bitácoras.
           </p>
           <Button
             variant="warning"
-            className="rounded-full px-8 font-semibold"
+            className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-8 font-semibold"
             onClick={() => router.push("/")}
           >
             Volver al inicio
@@ -172,19 +173,19 @@ export default function GestionBitacorasPage() {
         </div>
 
         {/* Selector de niño */}
-        <div className="bg-white rounded-3xl shadow-xl p-6 mb-8">
+        <div className="bg-white rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] shadow-xl p-6 mb-8">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Seleccionar Niño
           </label>
 
           <div className="flex flex-col md:flex-row gap-4">
-            {/* SELECT con estética tipo “Banco” */}
+            {/* SELECT con estética tipo "Banco" */}
             <div className="flex-1">
               <div className="relative">
                 <select
                   value={selectedChild || ""}
                   onChange={handleChildChange}
-                  className="w-full px-4 py-3 bg-yellow-200 border border-yellow-300 text-gray-800 rounded-2xl shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 appearance-none pr-10"
+                  className="w-full px-4 py-3 bg-yellow-200 border border-yellow-300 text-gray-800 rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px] shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 appearance-none pr-10"
                 >
                   {children.map((child) => (
                     <option
@@ -221,7 +222,7 @@ export default function GestionBitacorasPage() {
                 variant="warning"
                 icon={AddIcon}
                 iconPosition="left"
-                className="rounded-full shadow-lg"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] shadow-lg"
               >
                 Nueva Entrada
               </Button>
@@ -233,14 +234,14 @@ export default function GestionBitacorasPage() {
         {isLoading ? (
           <LoadingState message="Cargando bitácora..." fullScreen={false} />
         ) : bitacoraEntries.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center shadow-xl">
+          <div className="bg-white rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] p-12 text-center shadow-xl">
             <p className="text-gray-600 text-lg mb-4">
               No hay entradas en la bitácora de {selectedChildData?.nombre}
             </p>
             <Button
               onClick={handleCreate}
               variant="warning"
-              className="rounded-full"
+              className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px]"
             >
               Crear primera entrada
             </Button>
@@ -250,7 +251,7 @@ export default function GestionBitacorasPage() {
             {bitacoraEntries.map((entry) => (
               <div
                 key={entry.id}
-                className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+                className="bg-white rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] p-6 shadow-lg hover:shadow-xl transition-shadow"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -266,7 +267,7 @@ export default function GestionBitacorasPage() {
                       size="sm"
                       icon={EditIcon}
                       iconPosition="left"
-                      className="rounded-full"
+                      className="rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px]"
                     >
                       Editar
                     </Button>
@@ -276,7 +277,7 @@ export default function GestionBitacorasPage() {
                       size="sm"
                       icon={DeleteIcon}
                       iconPosition="left"
-                      className="rounded-full"
+                      className="rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px]"
                     >
                       Eliminar
                     </Button>
@@ -286,7 +287,7 @@ export default function GestionBitacorasPage() {
                   {entry.descripcion}
                 </p>
                 {entry.imagen && (
-                  <div className="mt-4 flex-shrink-0 w-48 h-48 bg-gray-200 rounded-2xl overflow-hidden">
+                  <div className="mt-4 flex-shrink-0 w-48 h-48 bg-gray-200 rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px] overflow-hidden">
                     <Image
                       src={getDirectImageUrl(entry.imagen)}
                       alt="Bitácora"
@@ -316,7 +317,7 @@ export default function GestionBitacorasPage() {
           </p>
 
           {entryToDelete && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px] p-4">
               <p className="text-sm text-gray-700">
                 <strong>Fecha:</strong> {entryToDelete.fecha}
               </p>
@@ -330,7 +331,7 @@ export default function GestionBitacorasPage() {
             <Button
               onClick={() => setShowDeleteModal(false)}
               variant="outline"
-              className="flex-1 rounded-full"
+              className="flex-1 rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px]"
               disabled={isDeleting}
             >
               Cancelar
@@ -338,7 +339,7 @@ export default function GestionBitacorasPage() {
             <Button
               onClick={handleConfirmDelete}
               variant="danger"
-              className="flex-1 rounded-full"
+              className="flex-1 rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px]"
               isLoading={isDeleting}
             >
               Eliminar

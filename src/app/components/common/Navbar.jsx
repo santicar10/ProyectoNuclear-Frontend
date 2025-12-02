@@ -97,7 +97,7 @@ export default function Navbar() {
             className="rounded-full"
             priority
           />
-          <span className="text-sm font-semibold">Huahuacuna</span>
+          <span className="text-sm font-semibold text-gray-700">Huahuacuna</span>
         </Link>
 
         {/* Menú (desktop) */}

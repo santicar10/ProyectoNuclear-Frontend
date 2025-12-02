@@ -1,3 +1,4 @@
+// src/app/components/children/ChildCard.jsx
 "use client";
 
 import { useState } from "react";
@@ -70,8 +71,8 @@ export default function ChildCard({ child, onDelete, showActions = false }) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
-      <div className="bg-gray-300 rounded-2xl overflow-hidden mb-4 aspect-square">
+    <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] p-6 shadow-xl hover:shadow-2xl transition-shadow">
+      <div className="bg-gray-300 rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px] overflow-hidden mb-4 aspect-square">
         <Image
           src={getDirectImageUrl(child.fotoUrl || child.foto_url) || "/placeholder-child.jpg"}
           alt={child.nombre || "Niño"}
@@ -114,7 +115,7 @@ export default function ChildCard({ child, onDelete, showActions = false }) {
             size="sm"
             icon={EditIcon}
             iconPosition="left"
-            className="rounded-full flex-1"
+            className="rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px] flex-1"
           >
             Editar
           </Button>
@@ -125,7 +126,7 @@ export default function ChildCard({ child, onDelete, showActions = false }) {
             icon={DeleteIcon}
             iconPosition="left"
             isLoading={isDeleting}
-            className="rounded-full flex-1"
+            className="rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px] flex-1"
           >
             Eliminar
           </Button>
@@ -135,7 +136,7 @@ export default function ChildCard({ child, onDelete, showActions = false }) {
           <Button
             onClick={handleView}
             variant="warning"
-            className="rounded-full px-6 font-bold shadow-md hover:shadow-lg border-2 border-gray-900"
+            className="rounded-tl-[35px] rounded-tr-lg rounded-bl-lg rounded-br-[35px] px-6 font-bold shadow-md hover:shadow-lg border-2 border-gray-900"
           >
             Ver más
           </Button>

@@ -1,3 +1,4 @@
+// src/app/(routes)/ninos/page.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -92,7 +93,7 @@ export default function ChildrenListPage({
               variant="warning"
               icon={AddIcon}
               iconPosition="left"
-              className="rounded-full shadow-lg"
+              className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] shadow-lg"
             >
               Agregar Niño
             </Button>
@@ -117,7 +118,7 @@ export default function ChildrenListPage({
 
 function EmptyState({ onCreateClick, isAdmin }) {
   return (
-    <div className="bg-white rounded-3xl p-12 text-center shadow-2xl">
+    <div className="bg-white rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] p-12 text-center shadow-2xl">
       <p className="text-gray-600 text-lg mb-4">
         {isAdmin ? "No hay niños registrados" : "No hay niños disponibles"}
       </p>
@@ -125,7 +126,7 @@ function EmptyState({ onCreateClick, isAdmin }) {
         <Button
           onClick={onCreateClick}
           variant="warning"
-          className="rounded-full"
+          className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px]"
         >
           Registrar primer niño
         </Button>

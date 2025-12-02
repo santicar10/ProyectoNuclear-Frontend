@@ -1,3 +1,4 @@
+// src/app/(routes)/bitacora/[id]/editar/page.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -74,11 +75,11 @@ export default function EditBitacoraEntryPage() {
         });
       } else {
         alert(result.error || "No se pudo cargar la entrada de bitácora.");
-        router.push("/ninos"); // Cambiar a la lista de niños en lugar de perfil
+        router.push("/ninos");
       }
     } catch (error) {
       alert("Error inesperado al cargar la bitácora.");
-      router.push("/ninos"); // Cambiar a la lista de niños en lugar de perfil
+      router.push("/ninos");
     } finally {
       setIsFetching(false);
     }
@@ -146,14 +147,14 @@ export default function EditBitacoraEntryPage() {
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-gray-50 pt-24 flex items-center justify-center">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md text-center">
+        <div className="bg-white rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] shadow-2xl p-8 max-w-md text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Acceso restringido</h1>
           <p className="text-gray-600 mb-6">
             Solo los administradores pueden editar entradas en la bitácora.
           </p>
           <Button
             variant="warning"
-            className="rounded-full px-8 font-semibold"
+            className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-8 font-semibold"
             onClick={() => router.push("/")}
           >
             Volver al inicio
@@ -166,7 +167,7 @@ export default function EditBitacoraEntryPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-12">
       <div className="max-w-3xl mx-auto px-6">
-        <div className="bg-white rounded-3xl shadow-2xl p-8">
+        <div className="bg-white rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] shadow-2xl p-8">
           <button
             onClick={handleBack}
             className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -219,7 +220,7 @@ export default function EditBitacoraEntryPage() {
             />
 
             {errors.submit && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px]">
                 <p className="text-sm text-red-600">{errors.submit}</p>
               </div>
             )}
@@ -229,7 +230,7 @@ export default function EditBitacoraEntryPage() {
                 type="button"
                 variant="outline"
                 onClick={handleBack}
-                className="rounded-full flex-1"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] flex-1"
               >
                 Cancelar
               </Button>
@@ -237,7 +238,7 @@ export default function EditBitacoraEntryPage() {
                 type="submit"
                 variant="warning"
                 isLoading={isLoading}
-                className="rounded-full flex-1 font-bold"
+                className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] flex-1 font-bold"
               >
                 Guardar cambios
               </Button>
