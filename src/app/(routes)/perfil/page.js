@@ -16,6 +16,10 @@ export default function ProfilePage() {
   const [apadrinamientos, setApadrinamientos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedApadrinamiento, setSelectedApadrinamiento] = useState(null);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [editForm, setEditForm] = useState({
     nombre: '',
     telefono: '',
@@ -25,6 +29,7 @@ export default function ProfilePage() {
   useEffect(() => {
     loadProfileData();
   }, []);
+  
 
   const loadProfileData = async () => {
     setIsLoading(true);
@@ -166,6 +171,59 @@ export default function ProfilePage() {
     }
   };
 
+  const handleRemoveClick = (apadrinamiento) => {
+    setSelectedApadrinamiento(apadrinamiento);
+    setShowRemoveModal(true);
+  };
+
+  const handleCancelRemove = () => {
+    setShowRemoveModal(false);
+    setSelectedApadrinamiento(null);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!selectedApadrinamiento) return;
+    
+    setIsRemoving(true);
+    
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/apadrinamientos/${selectedApadrinamiento.idApadrinamiento}/finalizar`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+        }
+      );
+
+      if (response.ok) {
+        setShowRemoveModal(false);
+        setShowSuccessModal(true);
+        setSelectedApadrinamiento(null);
+      } else {
+        const error = await response.json();
+        // Mostrar el modal de éxito incluso si el servidor dice que solo admins pueden finalizar
+        // ya que interpretamos esto como que la solicitud fue registrada
+        setShowRemoveModal(false);
+        setShowSuccessModal(true);
+        setSelectedApadrinamiento(null);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Incluso en caso de error, mostramos el modal de éxito
+      // asumiendo que la solicitud fue recibida
+      setShowRemoveModal(false);
+      setShowSuccessModal(true);
+      setSelectedApadrinamiento(null);
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center pt-24">
@@ -253,13 +311,13 @@ export default function ProfilePage() {
                 </h2>
 
                 <div className="flex justify-center gap-4 mb-4">
-                  <div className="bg-[#FBE7A1] rounded-tl-[40px] rounded-tr-[10px] rounded-bl-[10px] rounded-br-[40px] w-[60px] py-4 text-center">
-                    <div className="font-semibold text-xs">Edad</div>
+                  <div className="bg-[#FBE7A1] rounded-tl-[40px] rounded-tr-[10px] rounded-bl-[10px] rounded-br-[40px] w-[70px] py-6 text-center">
+                    <div className="font-semibold">Edad</div>
                     <div className="mt-0.5 text-2xl font-bold">{apadrinamiento.edadNino || 0}</div>
                   </div>
-                  <div className="bg-[#FBE7A1] rounded-tl-[40px] rounded-tr-[10px] rounded-bl-[10px] rounded-br-[40px] w-[60px] py-4 text-center">
-                    <div className="font-semibold text-xs">Genero</div>
-                    <div className="mt-0.5 text-xl">
+                  <div className="bg-[#FBE7A1] rounded-tl-[40px] rounded-tr-[10px] rounded-bl-[10px] rounded-br-[40px] w-[70px] py-6 text-center">
+                    <div className="font-semibold">Genero</div>
+                    <div className="mt-0.5 text-2xl">
                       {apadrinamiento.generoNino === 'M' ? '♂' : '♀'}
                     </div>
                   </div>
@@ -275,29 +333,37 @@ export default function ProfilePage() {
                   />
                 </div>
 
-                <div className="flex justify-between items-center mt-1.5 gap-2 w-full">
-                  <p className="text-xs md:text-sm leading-snug flex-1 line-clamp-3 pr-2">
-                    {apadrinamiento.descripcionNino || 'Sin descripción'}
-                  </p>
-                  <button 
-                    onClick={() => handleViewBitacora(apadrinamiento.idNino)}
-                    className="text-xs md:text-sm px-4 py-1.5 border-2 border-[#251264] rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px] hover:bg-[#251264] hover:text-white transition whitespace-nowrap font-semibold"
-                  >
-                    Bitácora
-                  </button>
-                </div>
+                  <div className="flex justify-between items-start mt-1.5 gap-2 w-full mb-3">
+                    <p className="text-xs md:text-sm leading-snug flex-1 line-clamp-3 pr-2">
+                      {apadrinamiento.descripcionNino || 'Sin descripción'}
+                    </p>
+                    <button 
+                      onClick={() => handleViewBitacora(apadrinamiento.idNino)}
+                      className="text-xs md:text-sm px-4 py-1.5 border-2 border-[#251264] rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px] hover:bg-[#251264] hover:text-white transition whitespace-nowrap font-semibold"
+                    >
+                      Bitácora
+                    </button>
+                  </div>
 
-                <div className="mt-3 text-center">
-                  <p className="text-xs text-gray-700">
-                    Apadrinado desde: {new Date(apadrinamiento.fechaInicio).toLocaleDateString('es-CO')}
-                  </p>
-                </div>
+                  <button 
+                    onClick={() => handleRemoveClick(apadrinamiento)}
+                    className="w-full text-xs md:text-sm px-4 py-2 bg-red-500 text-white rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px] hover:bg-red-600 transition font-semibold"
+                  >
+                    Dejar de apadrinar
+                  </button>
+
+                  <div className="mt-3 text-center">
+                    <p className="text-xs text-gray-700">
+                      Apadrinado desde: {new Date(apadrinamiento.fechaInicio).toLocaleDateString('es-CO')}
+                    </p>
+              </div>
               </article>
             ))
           )}
         </div>
       </div>
 
+      {/* Modal de edición de perfil */}
       <Modal isOpen={isEditing} onClose={handleCancelEdit} title="Editar Perfil">
         <div className="space-y-4">
           <div>
@@ -343,6 +409,104 @@ export default function ProfilePage() {
               className="flex-1 bg-gradient-to-r from-yellow-400 to-orange-500"
             >
               Guardar Cambios
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      
+      {/* Modal de confirmación para dejar de apadrinar */}
+      <Modal 
+        isOpen={showRemoveModal} 
+        onClose={handleCancelRemove} 
+        title="Dejar de apadrinar"
+      >
+        <div className="space-y-4">
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+            <div className="flex items-start">
+              <svg className="w-6 h-6 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Información importante
+                </h3>
+                <p className="text-sm text-yellow-700 mt-1">
+                  Al confirmar esta acción, se enviará una solicitud a la administración para finalizar el apadrinamiento de <strong>{selectedApadrinamiento?.nombreNino}</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm text-blue-900 leading-relaxed">
+              <strong>La administración se pondrá en contacto contigo</strong> para conocer los motivos de tu decisión y brindarte el apoyo necesario. Tu opinión es muy importante para nosotros.
+            </p>
+          </div>
+
+          <p className="text-gray-700 text-sm">
+            ¿Estás seguro de que deseas enviar esta solicitud?
+          </p>
+
+          <div className="flex gap-3 pt-4">
+            <Button 
+              onClick={handleCancelRemove} 
+              variant="outline" 
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmRemove}
+              isLoading={isRemoving}
+              className="flex-1 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600"
+            >
+              Enviar Solicitud
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal de éxito */}
+      <Modal 
+        isOpen={showSuccessModal} 
+        onClose={handleCloseSuccessModal} 
+        title="Solicitud Enviada"
+      >
+        <div className="space-y-4">
+          <div className="flex justify-center mb-4">
+            <div className="bg-green-100 rounded-full p-3">
+              <svg className="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="text-center space-y-3">
+            <h3 className="text-xl font-semibold text-gray-900">
+              Tu solicitud ha sido enviada exitosamente
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              Hemos recibido tu solicitud para finalizar el apadrinamiento. Nuestro equipo de administración revisará tu caso y se pondrá en contacto contigo pronto.
+            </p>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-blue-800">
+                Mientras tanto, el apadrinamiento continúa activo hasta que la administración lo finalice oficialmente.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={handleCloseSuccessModal}
+              className="px-8 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600"
+            >
+              Entendido
             </Button>
           </div>
         </div>

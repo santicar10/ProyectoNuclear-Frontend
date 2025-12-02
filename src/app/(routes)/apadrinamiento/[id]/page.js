@@ -199,13 +199,13 @@ export default function ChildDetailPage() {
                 </h2>
 
                 <div className="flex justify-center gap-6 mb-8">
-                  <div className="bg-[#FBE7A1] rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-5 py-3 text-center">
-                    <p className="text-xs text-gray-700 mb-1 font-semibold">Edad</p>
+                  <div className="bg-[#FBE7A1] rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] w-[70px] py-6 text-center">
+                    <p className="text-gray-700 mb-1 font-semibold">Edad</p>
                     <p className="text-2xl font-bold text-gray-900">{child.edad || 0}</p>
                   </div>
                   
-                  <div className="bg-[#FBE7A1] rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-5 py-3 text-center">
-                    <p className="text-xs text-gray-700 mb-1 font-semibold">Género</p>
+                  <div className="bg-[#FBE7A1] rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] w-[70px] py-6 text-center">
+                    <p className="text-gray-700 mb-1 font-semibold">Género</p>
                     <div className="flex justify-center">
                       <svg className="w-8 h-8 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
                         {child.genero === 'M' || child.genero === 'masculino' ? (

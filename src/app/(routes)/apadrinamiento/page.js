@@ -236,13 +236,13 @@ export default function ApadrinamientoPage() {
                 </h2>
 
                 <div className="flex justify-center gap-4 mb-4">
-                  <div className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center text-s">
+                  <div className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] bg-[#FBE7A1] rounded-full w-[70px] py-6 text-center text-s">
                     <div className="font-semibold">Edad</div>
-                    <div className="mt-0.5 text-lg md:text-xs font-semi-bold">{child.edad || 0}</div>
+                    <div className="mt-0.5 text-lg text-2xl font-semi-bold">{child.edad || 0}</div>
                   </div>
-                  <div className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] bg-[#FBE7A1] rounded-full w-[90px] py-2 text-center text-s">
+                  <div className="rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] bg-[#FBE7A1] rounded-full w-[70px] py-6 text-center text-s">
                     <div className="font-semibold">Genero</div>
-                    <div className="mt-0.5 text-lg md:text-xs font-semi-bold">
+                    <div className="mt-0.5 text-lg text-2xl font-semi-bold">
                       {child.genero === 'M' ? 'M' : 'F'}
                     </div>
                   </div>
