@@ -4,7 +4,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import Button from "@components/common/Button";
 import Modal from "@components/common/Modal";
 import childrenService from "@/app/lib/services/children.service";
 import { getDirectImageUrl } from "@/app/lib/utils/imageUtils";
@@ -68,7 +67,6 @@ export default function ChildDetailPage() {
   };
 
   const handleConfirmSponsor = () => {
-    // Aquí irá la lógica para apadrinar al niño
     setShowConfirmModal(false);
     alert(`¡Felicidades! Has iniciado el proceso de apadrinamiento para ${child.nombre}`);
     // TODO: Llamar al endpoint del backend para crear el apadrinamiento
@@ -91,9 +89,12 @@ export default function ChildDetailPage() {
       <div className="min-h-screen bg-white flex items-center justify-center pt-20">
         <div className="bg-white rounded-2xl p-8 max-w-md text-center shadow-xl">
           <p className="text-red-600 mb-4">{error || "Niño no encontrado"}</p>
-          <Button onClick={handleBack} variant="warning" className="rounded-full">
+          <button 
+            onClick={handleBack} 
+            className="px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-[#251264] font-semibold rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] transition"
+          >
             Volver al catálogo
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -110,7 +111,7 @@ export default function ChildDetailPage() {
           <span className="font-medium group-hover:underline">Volver al catálogo</span>
         </button>
 
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="bg-white rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] shadow-2xl overflow-hidden">
           <div className="grid md:grid-cols-5 gap-0">
             <div className="md:col-span-3 p-8 md:p-12 space-y-6">
               <div>
@@ -126,7 +127,7 @@ export default function ChildDetailPage() {
                 </p>
                 
                 {child.comunidad && (
-                  <div className="mt-6 p-4 bg-gray-50 rounded-xl border-l-4 border-yellow-400">
+                  <div className="mt-6 p-4 bg-gray-50 rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px] border-l-4 border-yellow-400">
                     <p className="text-sm text-gray-600 font-medium">Comunidad:</p>
                     <p className="text-gray-800">{child.comunidad}</p>
                   </div>
@@ -134,9 +135,9 @@ export default function ChildDetailPage() {
               </div>
             </div>
 
-            <div className="md:col-span-2 bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center p-8 md:p-12">
-              <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-[40px] p-6 md:p-8 shadow-2xl max-w-sm w-full">
-                <div className="bg-gray-300 rounded-[24px] overflow-hidden mb-6 aspect-square">
+            <div className="md:col-span-2 bg-gradient-to-br flex items-center justify-center p-8 md:p-12">
+              <div className="bg-gradient-to-br from-yellow-200 to-yellow-300 rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] p-6 md:p-8 shadow-2xl max-w-sm w-full">
+                <div className="bg-gray-300 rounded-tl-[30px] rounded-tr-lg rounded-bl-lg rounded-br-[30px] overflow-hidden mb-6 aspect-square">
                   <Image
                     src={getDirectImageUrl(child.fotoUrl || child.foto_url) || "/placeholder-child.jpg"}
                     alt={child.nombre || "Niño"}
@@ -151,13 +152,13 @@ export default function ChildDetailPage() {
                 </h2>
 
                 <div className="flex justify-center gap-6 mb-8">
-                  <div className="bg-[#FBE7A1] rounded-full px-5 py-3 text-center">
-                    <p className="text-xs text-gray-700 mb-1 font-semibold">Age</p>
+                  <div className="bg-[#FBE7A1] rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-5 py-3 text-center">
+                    <p className="text-xs text-gray-700 mb-1 font-semibold">Edad</p>
                     <p className="text-2xl font-bold text-gray-900">{child.edad || 0}</p>
                   </div>
                   
-                  <div className="bg-[#FBE7A1] rounded-full px-5 py-3 text-center">
-                    <p className="text-xs text-gray-700 mb-1 font-semibold">Gender</p>
+                  <div className="bg-[#FBE7A1] rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] px-5 py-3 text-center">
+                    <p className="text-xs text-gray-700 mb-1 font-semibold">Género</p>
                     <div className="flex justify-center">
                       <svg className="w-8 h-8 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
                         {child.genero === 'M' || child.genero === 'masculino' ? (
@@ -171,13 +172,12 @@ export default function ChildDetailPage() {
                 </div>
 
                 <div className="flex justify-center">
-                  <Button
+                  <button
                     onClick={handleSponsorClick}
-                    variant="warning"
-                    className="rounded-full px-8 py-3 font-bold text-base md:text-lg shadow-lg hover:shadow-xl border-2 border-gray-900 transition-all hover:scale-105"
+                    className="px-8 py-3 bg-white hover:bg-yellow-500 text-[#251264] font-bold text-base md:text-lg shadow-lg hover:shadow-xl border-2 border-gray-900 rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] transition-all hover:scale-105"
                   >
                     Apadrinar
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -205,7 +205,7 @@ export default function ChildDetailPage() {
             Te mantendremos informado sobre su progreso y desarrollo.
           </p>
 
-          <div className="bg-yellow-50 rounded-xl p-4 mb-6 border border-yellow-200">
+          <div className="bg-yellow-50 rounded-tl-[25px] rounded-tr-lg rounded-bl-lg rounded-br-[25px] p-4 mb-6 border border-yellow-200">
             <p className="text-sm text-gray-700">
               <span className="font-semibold">Nota:</span> Un miembro de nuestro equipo se pondrá en contacto contigo 
               para completar el proceso de apadrinamiento.
@@ -213,20 +213,18 @@ export default function ChildDetailPage() {
           </div>
 
           <div className="flex gap-4">
-            <Button
+            <button
               onClick={handleCancelSponsor}
-              variant="outline"
-              className="flex-1 rounded-full font-semibold"
+              className="flex-1 px-6 py-3 border-2 border-[#251264] text-[#251264] font-semibold rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] hover:bg-[#251264] hover:text-white transition"
             >
               Cancelar
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={handleConfirmSponsor}
-              variant="warning"
-              className="flex-1 rounded-full font-bold shadow-lg hover:shadow-xl"
+              className="flex-1 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-[#251264] font-bold shadow-lg hover:shadow-xl rounded-tl-[45px] rounded-tr-lg rounded-bl-lg rounded-br-[45px] transition"
             >
               Sí, quiero apadrinar
-            </Button>
+            </button>
           </div>
         </div>
       </Modal>

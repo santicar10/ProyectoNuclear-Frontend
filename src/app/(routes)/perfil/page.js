@@ -30,23 +30,82 @@ export default function ProfilePage() {
   const loadProfileData = async () => {
     setIsLoading(true);
     
-    const userData = authService.getUserData();
-    if (userData) {
+    // Primero verificar si hay sesión
+    const sessionData = authService.getUserData();
+    if (!sessionData) {
+      router.push('/login');
+      return;
+    }
+
+    // Obtener datos completos del perfil desde el servidor
+    try {
+      const response = await fetch('http://localhost:8080/api/usuarios/perfil', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        
+        // Actualizar localStorage con datos completos
+        authService.updateUserData({
+          nombre: userData.nombre,
+          correo: userData.correo,
+          telefono: userData.telefono,
+          direccion: userData.direccion,
+        });
+
+        setPadrinoData({
+          id: userData.id_usuario || userData.id,
+          name: userData.nombre || 'Usuario',
+          email: userData.correo || '',
+          phone: userData.telefono || '',
+          location: userData.direccion || ''
+        });
+        
+        setEditForm({
+          nombre: userData.nombre || '',
+          telefono: userData.telefono || '',
+          direccion: userData.direccion || ''
+        });
+      } else {
+        // Si falla, usar datos de sesión como fallback
+        setPadrinoData({
+          id: sessionData.id_usuario || sessionData.id,
+          name: sessionData.nombre || 'Usuario',
+          email: sessionData.correo || '',
+          phone: sessionData.telefono || '',
+          location: sessionData.direccion || ''
+        });
+        
+        setEditForm({
+          nombre: sessionData.nombre || '',
+          telefono: sessionData.telefono || '',
+          direccion: sessionData.direccion || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error al cargar perfil:', error);
+      // Fallback a datos de sesión
       setPadrinoData({
-        id: userData.id_usuario,
-        name: userData.nombre || 'Usuario',
-        email: userData.correo || '',
-        phone: userData.telefono || '',
-        location: userData.direccion || ''
+        id: sessionData.id_usuario || sessionData.id,
+        name: sessionData.nombre || 'Usuario',
+        email: sessionData.correo || '',
+        phone: sessionData.telefono || '',
+        location: sessionData.direccion || ''
       });
       
       setEditForm({
-        nombre: userData.nombre || '',
-        telefono: userData.telefono || '',
-        direccion: userData.direccion || ''
+        nombre: sessionData.nombre || '',
+        telefono: sessionData.telefono || '',
+        direccion: sessionData.direccion || ''
       });
     }
 
+    // Cargar niños apadrinados
     const result = await childrenService.getAll();
     if (result.success) {
       setChildrenData(result.data.slice(0, 3));
@@ -299,7 +358,7 @@ export default function ProfilePage() {
               type="text"
               value={editForm.nombre}
               onChange={(e) => setEditForm({ ...editForm, nombre: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-gray-900 bg-white"
               placeholder="Tu nombre completo"
             />
           </div>
@@ -312,7 +371,7 @@ export default function ProfilePage() {
               type="tel"
               value={editForm.telefono}
               onChange={(e) => setEditForm({ ...editForm, telefono: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-gray-900 bg-white"
               placeholder="Número de teléfono"
             />
           </div>
@@ -325,7 +384,7 @@ export default function ProfilePage() {
               type="text"
               value={editForm.direccion}
               onChange={(e) => setEditForm({ ...editForm, direccion: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-gray-900 bg-white"
               placeholder="Tu dirección"
             />
           </div>
